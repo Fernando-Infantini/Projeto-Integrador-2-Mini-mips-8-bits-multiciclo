@@ -7,14 +7,17 @@ void* memCheck(void* a);
 control_signal* uc(unsigned int microinstruction, unsigned int function){
     control_signal* result=(control_signal*)memCheck(malloc(sizeof(control_signal)));
 
+	unsigned int tmp=0;
+
 	result->pcWrite = (microinstruction==0)||(microinstruction==10);
-	result->louD = ((microinstruction&14)==4);
+	result->louD = ((microinstruction&14)==4)||(microinstruction==3);
 	result->MemWrite = (microinstruction==4);
-	result->IREsc = (microinstruction==0);
+	result->irWrite = (microinstruction==0);
 	result->Mem2Reg = (microinstruction==4);
-	result->RegWrite = ((microinstruction&13)==4);
+	result->RegWrite = ((microinstruction&13)==4)||(microinstruction==8);
 	result->AluSrcA = ((microinstruction&10)==2)||((microinstruction&10)==8)||((microinstruction&4)==4);
-	result->AluSrcB = 2*( (microinstruction&6==4)||(microinstruction&13==1)||(microinstruction&11==2) )+(microinstruction==0);
+	tmp = ((microinstruction&6)==4)||((microinstruction&13)==1)||((microinstruction&11)==2);
+	result->AluSrcB = (int)(tmp<<1 | (unsigned int)(microinstruction==0));
 
 	if(microinstruction<7){
 		result->AluFunct = 0;
@@ -24,7 +27,8 @@ control_signal* uc(unsigned int microinstruction, unsigned int function){
 		result->AluFunct = 1;
 	}
 
-	result->pcSrc = 2*(microinstruction==10)+(microinstruction==9);
+	tmp = (microinstruction==10);
+	result->pcSrc = (int)(tmp<<1 | (unsigned int)(microinstruction==9));
 	result->RegDst = ((microinstruction&14)==0) || (microinstruction==7) || (microinstruction==8);
 	result->branch = microinstruction==9;
 

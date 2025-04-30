@@ -5,7 +5,7 @@ typedef struct{
 	bool pcWrite;
 	bool louD;
 	bool MemWrite;
-	bool IREsc;
+	bool irWrite;
 	bool Mem2Reg;
 	bool RegWrite;
 	bool AluSrcA;
