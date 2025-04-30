@@ -4,44 +4,37 @@
 
 void* memCheck(void* a);
 
-control_signal* uc(unsigned int inst, unsigned int function){
+control_signal* uc(unsigned int microinstruction, unsigned int function){
     control_signal* result=(control_signal*)memCheck(malloc(sizeof(control_signal)));
 
-    if(inst!=11){result->Mem2Reg=true;}
-    else{result->Mem2Reg=false;}
+	result->pcWrite = (microinstruction==0)||(microinstruction==10);
+	result->louD = ((microinstruction&14)==4);
+	result->MemWrite = (microinstruction==4);
+	result->IREsc = (microinstruction==0);
+	result->Mem2Reg = (microinstruction==4);
+	result->RegWrite = ((microinstruction&13)==4);
+	result->AluSrcA = ((microinstruction&10)==2)||((microinstruction&10)==8)||((microinstruction&4)==4);
+	result->AluSrcB = 2*( (microinstruction&6==4)||(microinstruction&13==1)||(microinstruction&11==2) )+(microinstruction==0);
 
-    if(inst==15){result->MemWrite=true;}
-    else{result->MemWrite=false;}
+	if(microinstruction<7){
+		result->AluFunct = 0;
+	}else if( (6<microinstruction && microinstruction<9) || (microinstruction==10)){
+		result->AluFunct = function;
+	}else{
+		result->AluFunct = 1;
+	}
 
-    if(inst==8){result->branch=true;}
-    else{result->branch=false;}
+	result->pcSrc = 2*(microinstruction==10)+(microinstruction==9);
+	result->RegDst = ((microinstruction&14)==0) || (microinstruction==7) || (microinstruction==8);
+	result->branch = microinstruction==9;
 
-    if((inst&5)!=0){result->AluSrc=true;}
-    else{result->AluSrc=false;}
-
-	if((inst&12)==0) result->RegDst=true;
-	else result->RegDst;
-
-    if(((inst&10)==0)||((inst&5)==1)){result->RegWrite=true;}
-    else{result->RegWrite=false;}
-
-    if(inst==2){result->jump=true;}
-    else{result->jump=false;}
-
-    if(0<=inst && inst<2){
-        result->AluFunc=function;
-    }else if(1<inst && inst<8){
-        result->AluFunc=2;
-    }else if(7<inst && inst<10){
-        result->AluFunc=1;
-    }else if(9<inst && inst<16){
-        result->AluFunc=0;
-    }else{
-        return NULL;
-    }
-
-    instruction_name_finder(inst,function,result->name);
     return result;
+}
+
+void update_microinstruction(unsigned int inst, unsigned int function, unsigned int* microinstruction){
+/*	const unsigned int lkt[10][]={{1},{},{},{},{}};
+	microinstruction = lkt[microinstruction][inst];*/ //unfinished
+	return;
 }
 
 void instruction_name_finder(unsigned int inst, unsigned int function, char* name){
