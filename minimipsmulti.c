@@ -1,15 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <stdint.h>
-#include "minimipsmulti.h"
+
+#include "minimipsmulti.h" //isso aqui não pode existir
+
+#include "control_unit.h"
+#include "dat_manager.h"
+#include "stack.h"
+#include "ula.h"
 
 int main(int argc, char** argv){
 
 	char fileN[64];
     int8_t reg[8] = {0};
-    int8_t mem[512] = {0};
+    data mem[256] = {0};
     int16_t A=0, B=0;
     uint8_t pc=0;
     control_signal* csignal;
@@ -20,7 +25,7 @@ int main(int argc, char** argv){
 
     if(argc>1){
 		strcpy(fileN,argv[1]);
-		ler_mem(instruction_mem,fileN);
+		ler_mem(mem,fileN);
 	}
 
 	char temp[30];
@@ -30,13 +35,13 @@ int main(int argc, char** argv){
 		switch(casee){
 			case '1':
 
-				addState(pc, reg, data_mem, &state_stack);
-                exec(instruction_mem[pc], &pc, reg, data_mem);
+				addState(pc, reg, mem, &state_stack);
+                exec(mem[pc], &pc, reg, mem);
 
                 printf("\n");
                 for(int i=0;i<16;i++){
                     for(int j=0;j<16;j++){
-                        printf("|%i",data_mem[16*i+j]);
+                        printf("|%i",mem[16*i+j]);
                     }
                     printf("|\n");
                 }
@@ -47,14 +52,14 @@ int main(int argc, char** argv){
                 }
                 printf("|\n\n");
 
-                decod(instruction_mem+pc);
-                csignal = uc(instruction_mem[pc].opcode,instruction_mem[pc].funct);
+                decod(mem+pc);
+                csignal = uc(mem[pc].opcode,mem[pc].funct);
                 printf("PC:%u | %s ",pc, csignal->name);
                 if( !csignal->jump ){
-                    if( !csignal->RegDst ) printf("$%u, $%u, %i\n", instruction_mem[pc].rt, instruction_mem[pc].rs, instruction_mem[pc].imm);
-                    else printf("$%u, $%u, $%u\n", instruction_mem[pc].rd, instruction_mem[pc].rs, instruction_mem[pc].rt);
+                    if( !csignal->RegDst ) printf("$%u, $%u, %i\n", mem[pc].rt, mem[pc].rs, mem[pc].imm);
+                    else printf("$%u, $%u, $%u\n", mem[pc].rd, mem[pc].rs, mem[pc].rt);
                 }
-                else printf("%u\n",instruction_mem[pc].addr);
+                else printf("%u\n",mem[pc].addr);
                 free(csignal);
 
 			break;
@@ -62,7 +67,7 @@ int main(int argc, char** argv){
 			case '2':
 				for(int i=0;i<16;i++){
 					for(int j=0;j<16;j++){
-						printf("|%i",data_mem[16*i+j]);
+						printf("|%i",mem[16*i+j]);
 					}
 					printf("|\n");
 				}
@@ -78,32 +83,32 @@ int main(int argc, char** argv){
 
             case '4':
                 for(int i=0;i<256;i++){
-                    decod(instruction_mem+i);
-                    csignal = uc(instruction_mem[i].opcode,instruction_mem[i].funct);
+                    decod(mem+i);
+                    csignal = uc(mem[i].opcode,mem[i].funct);
                     printf("Num:%u | %s ",i, csignal->name);
                     if( !csignal->jump ){
-	                    if( !csignal->RegDst ) printf("$%u, $%u, %i\n", instruction_mem[i].rt, instruction_mem[i].rs, instruction_mem[i].imm);
-	                    else printf("$%u, $%u, $%u\n", instruction_mem[i].rd, instruction_mem[i].rs, instruction_mem[i].rt);
+	                    if( !csignal->RegDst ) printf("$%u, $%u, %i\n", mem[i].rt, mem[i].rs, mem[i].imm);
+	                    else printf("$%u, $%u, $%u\n", mem[i].rd, mem[i].rs, mem[i].rt);
                     }
-                    else printf("%u\n",instruction_mem[i].addr);
+                    else printf("%u\n",mem[i].addr);
                     free(csignal);
                 }
             break;
 
             case '5':
-                decod(instruction_mem+pc);
-                csignal = uc(instruction_mem[pc].opcode,instruction_mem[pc].funct);
+                decod(mem+pc);
+                csignal = uc(mem[pc].opcode,mem[pc].funct);
                 printf("PC:%u | %s ",pc, csignal->name);
                 if( !csignal->jump ){
-                    if( !csignal->RegDst ) printf("$%u, $%u, %i\n", instruction_mem[pc].rt, instruction_mem[pc].rs, instruction_mem[pc].imm);
-                    else printf("$%u, $%u, $%u\n", instruction_mem[pc].rd, instruction_mem[pc].rs, instruction_mem[pc].rt);
+                    if( !csignal->RegDst ) printf("$%u, $%u, %i\n", mem[pc].rt, mem[pc].rs, mem[pc].imm);
+                    else printf("$%u, $%u, $%u\n", mem[pc].rd, mem[pc].rs, mem[pc].rt);
                 }
-                else printf("%u\n",instruction_mem[pc].addr);
+                else printf("%u\n",mem[pc].addr);
                 free(csignal);
 			break;
 
 			case '6':
-				asm_code(instruction_mem, fileN);
+				asm_code(mem, fileN);
 			break;
 
 			case '7':
@@ -113,14 +118,14 @@ int main(int argc, char** argv){
 					reg[i] = 0;
 				}
 				for(int i=0;i<256;i++){
-					data_mem[i]=0;
+					mem[i].imm = 0;
 				}
 
 				printf("Digite nome do arquivo: ");
 				do fgets(temp,29,stdin); while( !((strcmp(temp,"\n"))||(strcmp(temp,"\n\0"))) );
 				temp[strcspn(temp,"\n")]='\0';
 
-				read_dat(temp, data_mem);
+				read_dat(temp, mem);
 
 			break;
 
@@ -129,7 +134,7 @@ int main(int argc, char** argv){
 				do fgets(temp,29,stdin); while( !((strcmp(temp,"\n"))||(strcmp(temp,"\n\0"))) );
 				temp[strcspn(temp,"\n")]='\0';
 
-				write_dat(temp, data_mem);
+				write_dat(temp, mem);
 
 			break;
 
@@ -139,8 +144,8 @@ int main(int argc, char** argv){
 					printf("break point:");
 					scanf("%u", (unsigned int*)&break_point);
 					do{
-						addState(pc, reg, data_mem, &state_stack);
-						exec(instruction_mem[pc], &pc, reg, data_mem);
+						addState(pc, reg, mem, &state_stack);
+						exec(mem[pc], &pc, reg, mem);
 					}while(pc != break_point);
 				}
             break;
@@ -156,9 +161,9 @@ int main(int argc, char** argv){
 					reg[i] = 0;
 				}
 				for(int i=0;i<256;i++){
-					data_mem[i]=0;
+					mem[i].imm=0;
 				}
-				ler_mem(instruction_mem,fileN);
+				ler_mem(mem,fileN);
 			break;
 
             case 'b':
@@ -168,12 +173,12 @@ int main(int argc, char** argv){
 					break;
 				}
 
-				loadState(&pc, reg, data_mem, &state_stack);
+				loadState(&pc, reg, mem, &state_stack);
 
                 printf("\n");
                 for(int i=0;i<16;i++){
                     for(int j=0;j<16;j++){
-                        printf("|%i",data_mem[16*i+j]);
+                        printf("|%i",mem[16*i+j]);
                     }
                     printf("|\n");
                 }
@@ -184,14 +189,14 @@ int main(int argc, char** argv){
                 }
                 printf("|\n\n");
 
-                decod(instruction_mem+pc);
-                csignal = uc(instruction_mem[pc].opcode,instruction_mem[pc].funct);
+                decod(mem+pc);
+                csignal = uc(mem[pc].opcode,mem[pc].funct);
                 printf("PC:%u | %s ",pc, csignal->name);
                 if( !csignal->jump ){
-                    if( !csignal->RegDst ) printf("$%u, $%u, %i\n", instruction_mem[pc].rt, instruction_mem[pc].rs, instruction_mem[pc].imm);
-                    else printf("$%u, $%u, $%u\n", instruction_mem[pc].rd, instruction_mem[pc].rs, instruction_mem[pc].rt);
+                    if( !csignal->RegDst ) printf("$%u, $%u, %i\n", mem[pc].rt, mem[pc].rs, mem[pc].imm);
+                    else printf("$%u, $%u, $%u\n", mem[pc].rd, mem[pc].rs, mem[pc].rt);
                 }
-                else printf("%u\n",instruction_mem[pc].addr);
+                else printf("%u\n",mem[pc].addr);
                 free(csignal);
 
 
@@ -227,7 +232,7 @@ int main(int argc, char** argv){
 
 
 
-void ler_mem(inst *mem_lida, const char* name){
+void ler_mem(data *mem_lida, const char* name){
     FILE *arq;
     arq = fopen(name,"r");
     char temp[20];
@@ -288,7 +293,7 @@ int binario_para_decimal(char binario[], int inicio, int fim, int complemento2) 
     return decimal;
 };
 
-void decod(inst* a){
+void decod(data* a){
 
     union{
         uint8_t u;
@@ -307,137 +312,7 @@ void decod(inst* a){
     return;
 }
 
-control_signal* uc(unsigned int inst, unsigned int function){
-    control_signal* result=(control_signal*)memCheck(malloc(sizeof(control_signal)));
-
-    if(inst!=11){result->Mem2Reg=true;}
-    else{result->Mem2Reg=false;}
-
-    if(inst==15){result->MemWrite=true;}
-    else{result->MemWrite=false;}
-
-    if(inst==8){result->branch=true;}
-    else{result->branch=false;}
-
-    if((inst&5)!=0){result->AluSrc=true;}
-    else{result->AluSrc=false;}
-
-//regdst
-	if((inst&12)==0) result->RegDst=true;
-	else result->RegDst;
-
-    if(((inst&10)==0)||((inst&5)==1)){result->RegWrite=true;}
-    else{result->RegWrite=false;}
-
-    if(inst==2){result->jump=true;}
-    else{result->jump=false;}
-
-    if(0<=inst && inst<2){
-        result->AluFunc=function;
-    }else if(1<inst && inst<8){
-        result->AluFunc=2;
-    }else if(7<inst && inst<10){
-        result->AluFunc=1;
-    }else if(9<inst && inst<16){
-        result->AluFunc=0;
-    }else{
-        return NULL;
-    }
-
-    instruction_name_finder(inst,function,result->name);
-    return result;
-}
-
-void instruction_name_finder(unsigned int inst, unsigned int function, char* name){
-
-    switch(inst){
-        case 0:
-            switch(function){
-                case 0:
-				case 2:
-				case 4:
-				case 6:
-                    strcpy(name,"add\0");
-                    break;
-                case 1:
-                    strcpy(name,"sub\0");
-                    break;
-                case 3:
-                    strcpy(name,"and\0");
-                    break;
-                case 5:
-                    strcpy(name,"or\0");
-                    break;
-                case 7:
-                    strcpy(name,"zero\0");
-                    break;
-            }
-            break;
-        case 2:
-            strcpy(name,"j\0");
-            break;
-        case 4:
-            strcpy(name,"addi\0");
-            break;
-        case 8:
-            strcpy(name,"beq\0");
-            break;
-        case 11:
-            strcpy(name,"lw\0");
-            break;
-        case 15:
-            strcpy(name,"sw\0");
-            break;
-        default:
-            exit(1);
-            break;
-    }
-    return;
-}
-
-void* memCheck(void* a){
-    if(!a){
-        exit(2);
-    }
-    return a;
-}
-
-ula_signal* ula(int16_t reg1, int16_t reg2, uint8_t funct, uint8_t pc, int8_t aluOut){
-
-    ula_signal* result=calloc(1,sizeof(ula_signal));
-	result->overflow=0;
-
-    switch(funct){
-        case 0:
-        case 2:
-        case 3:
-        case 6:
-            if(reg1+reg2>127 || reg1+reg2<-128) result->overflow = 1;
-            result->result = (int8_t) reg1 + reg2;
-        break;
-
-        case 1:
-            if(reg1-reg2>127 || reg1-reg2<-128) result->overflow = 1;
-            result->result = (int8_t) reg1 - reg2;
-        break;
-
-        case 4:
-            result->result = (int8_t) reg1 & reg2;
-        break;
-
-        case 5:
-            result->result = (int8_t) reg1 | reg2;
-        break;
-
-        case 7:
-            result->result = 0;
-        break;
-    }
-    result->zero_flag = result->result==0;
-    return result;
-};
-
-void asm_code(inst *instruction_mem,const char *memo){
+void asm_code(data* mem,const char *memo){
     char temp[30];
     control_signal *csignal;
 	int cont=0;
@@ -445,59 +320,38 @@ void asm_code(inst *instruction_mem,const char *memo){
 	printf("Digite nome do arquivo .asm: ");
 	scanf("%s",temp);
 
-    FILE *arq = fopen(temp,"w");
-	FILE *mem= fopen(memo,"r");
+    FILE* arq = fopen(temp,"w");
+	FILE* in = fopen(memo,"r");
 
 
-    if(mem == NULL){
+    if(in == NULL){
         printf("ERRO NA LEITURA DA MEMORIA DE INSTRUCOES\n");
         exit(2);
     };
 
 
-	while(!feof(mem)){
-		fgets(temp,20,mem);
+	while(!feof(in)){
+		fgets(temp,20,in);
 		cont++;
 	}
 
         for(int i=0;i < cont; i++){
-            decod(instruction_mem+i);
-                    csignal = uc(instruction_mem[i].opcode,instruction_mem[i].funct);
+            decod(mem+i);
+                    csignal = uc(mem[i].opcode,mem[i].funct);
                     fprintf(arq, "%s ", csignal->name);
                     if( !csignal->jump ){
-                        if( !csignal->RegDst ) fprintf(arq, "$%u, $%u, %i\n", instruction_mem[i].rt, instruction_mem[i].rs, instruction_mem[i].imm);
-                        else fprintf(arq,"$%u, $%u, $%u\n", instruction_mem[i].rd, instruction_mem[i].rs, instruction_mem[i].rt);
+                        if( !csignal->RegDst ) fprintf(arq, "$%u, $%u, %i\n", mem[i].rt, mem[i].rs, mem[i].imm);
+                        else fprintf(arq,"$%u, $%u, $%u\n", mem[i].rd, mem[i].rs, mem[i].rt);
                     }
-                    else fprintf(arq, "%u\n",instruction_mem[i].addr);
+                    else fprintf(arq, "%u\n",mem[i].addr);
         }
 
 		fclose(arq);
-		fclose(mem);
+		fclose(in);
 		free(csignal);
 }
 
-void read_dat(const char* name, int8_t* a){
-	FILE* buffer = fopen(name,"r");
-	if(!buffer) exit(2);
-	for(int i=0;i<512;i++){
-			fscanf(buffer,"%i",(int*)&a[i]);
-	}
-	fclose(buffer);
-	return;
-}
-
-void write_dat(const char* name, int8_t* a){
-	FILE *buffer = fopen(name,"w");
-	if(!buffer) exit(2);
-	for(int i=0;i<512;i++){
-			fprintf(buffer,"%i",a[i]);
-	}
-	fprintf(buffer,"\n");
-	fclose(buffer);
-	return;
-}
-
-void exec(inst instruction, uint8_t* pc, int8_t* reg, int8_t* data_mem){
+void exec(data instruction, uint8_t* pc, int8_t* reg, int8_t* mem){
 
 	int8_t aluIn, result;
 
@@ -517,11 +371,11 @@ void exec(inst instruction, uint8_t* pc, int8_t* reg, int8_t* data_mem){
     ula_signal* usignal = ula((int16_t)reg[instruction.rs],(int16_t)aluIn,csignal->AluFunc, pc);
 
     if( csignal->MemWrite == 1 ){
-        data_mem[usignal->result] = reg[instruction.rt];
+        mem[usignal->result] = reg[instruction.rt];
     }
 
     if( !csignal->Mem2Reg ){
-        result = data_mem[usignal->result];
+        result = mem[usignal->result];
     }else result = usignal->result;
 
     if( csignal->RegWrite == 1 ){
@@ -542,39 +396,3 @@ void exec(inst instruction, uint8_t* pc, int8_t* reg, int8_t* data_mem){
 	return;
 }
 
-void addState(uint8_t pc, int8_t* reg, int8_t* data_mem, state** stack){
-	state* temp = malloc(sizeof(state));
-	temp->pc = pc;
-	for(int i=0;i<8;i++){
-		temp->registers[i] = reg[i];
-		temp->data_mem[i] = data_mem[i];
-	}
-	for(int i=8;i<256;i++){
-		temp->data_mem[i] = data_mem[i];
-	}
-	temp->next = *stack;
-	*stack = temp;
-	return;
-}
-void loadState(uint8_t *pc, int8_t* reg, int8_t* data_mem, state** stack){
-	state* temp = *stack;
-	*pc = temp->pc;
-	for(int i=0;i<8;i++){
-		reg[i] = temp->registers[i];
-		data_mem[i] = temp->data_mem[i];
-	}
-	for(int i=8;i<256;i++){
-		data_mem[i] = temp->data_mem[i];
-	}
-	*stack = temp->next;
-	free(temp);
-	return;
-}
-void clearState(state* stack){
-	do{
-		state* tmp = stack->next;
-		free(stack);
-		stack = tmp;
-	}while(stack);
-	return;
-}
