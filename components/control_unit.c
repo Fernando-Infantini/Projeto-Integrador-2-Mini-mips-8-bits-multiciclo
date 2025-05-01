@@ -3,6 +3,7 @@
 #include "control_unit.h"
 
 void* memCheck(void* a);
+unsigned int classify(unsigned int inst);
 
 control_signal* uc(unsigned int microinstruction, unsigned int function){
     control_signal* result=(control_signal*)memCheck(malloc(sizeof(control_signal)));
@@ -35,62 +36,121 @@ control_signal* uc(unsigned int microinstruction, unsigned int function){
     return result;
 }
 
-void update_microinstruction(unsigned int inst, unsigned int function, unsigned int* microinstruction){
-/*	const unsigned int lkt[10][]={{1},{},{},{},{}};
-	microinstruction = lkt[microinstruction][inst];*/ //unfinished
+void update_microinstruction(unsigned int inst, unsigned int* microinstruction){
+	switch(*microinstruction){
+		case 0:
+			(*microinstruction) = 1;
+		break;
+		case 1:
+			switch(classify(inst)){
+				case 0:
+					(*microinstruction) = 2;
+				break;
+				case 1:
+					(*microinstruction) = 7;
+				break;
+				case 2:
+					(*microinstruction) = 9;
+				break;
+				case 3:
+					(*microinstruction) = 10;
+				break;
+				case 4:
+					(*microinstruction) = 0;
+				break;
+			}
+		break;
+		case 2:
+			switch(inst){
+				case 4:
+					(*microinstruction) = 6;
+				break;
+				case 11:
+					(*microinstruction) = 3;
+				break;
+				case 15:
+					(*microinstruction) = 5;
+				break;
+				default:
+					(*microinstruction) = 0;
+				break;
+			}
+		break;
+		case 3:
+			(*microinstruction) = 4;
+		break;
+		case 7:
+			(*microinstruction) = 8;
+		break;
+		default:
+			(*microinstruction) = 0;
+		break;
+	}
 	return;
 }
 
 void instruction_name_finder(unsigned int inst, unsigned int function, char* name){
 
-    switch(inst){
-        case 0:
-            switch(function){
-                case 0:
+	switch(inst){
+		case 0:
+			switch(function){
+				case 0:
 				case 2:
 				case 4:
 				case 6:
-                    strcpy(name,"add\0");
-                    break;
-                case 1:
-                    strcpy(name,"sub\0");
-                    break;
-                case 3:
-                    strcpy(name,"and\0");
-                    break;
-                case 5:
-                    strcpy(name,"or\0");
-                    break;
-                case 7:
-                    strcpy(name,"zero\0");
-                    break;
-            }
-            break;
-        case 2:
-            strcpy(name,"j\0");
-            break;
+					strcpy(name,"add\0");
+				break;
+				case 1:
+					strcpy(name,"sub\0");
+				break;
+				case 3:
+					strcpy(name,"and\0");
+				break;
+				case 5:
+					strcpy(name,"or\0");
+				break;
+				case 7:
+					strcpy(name,"zero\0");
+				break;
+			}
+		break;
+		case 2:
+			strcpy(name,"j\0");
+		break;
         case 4:
-            strcpy(name,"addi\0");
-            break;
-        case 8:
-            strcpy(name,"beq\0");
-            break;
-        case 11:
-            strcpy(name,"lw\0");
-            break;
-        case 15:
-            strcpy(name,"sw\0");
-            break;
-        default:
-            exit(1);
-            break;
-    }
-    return;
+			strcpy(name,"addi\0");
+		break;
+		case 8:
+			strcpy(name,"beq\0");
+		break;
+		case 11:
+			strcpy(name,"lw\0");
+		break;
+		case 15:
+			strcpy(name,"sw\0");
+		break;
+		default:
+			exit(1);
+		break;
+	}
+	return;
 }
 
+unsigned int classify(unsigned int inst){
+	if(inst==0){
+		return 1;
+	}else if(inst==4||(inst&11)==11){
+		return 0;
+	}else if(inst==8){
+		return 2;
+	}else if(inst==2){
+		return 3;
+	}
+	return 4;
+}
 void* memCheck(void* a){
-    if(!a){
-        exit(2);
-    }
-    return a;
+	if(!a){
+		exit(2);
+	}
+	return a;
 }
