@@ -4,7 +4,7 @@
 
 int main(void){
 	for(int i=0;i<11;i++){
-		control_signal* a = uc(i,3);
+		control_signal* a = uc(i,2);
 		printf("%i | %i %i %i %i %i %i %i %i %i %i %i %i\n", i,
 			a->pcWrite,
 			a->louD,

@@ -1,4 +1,8 @@
 flags:
-	gcc test_flags.c ../components/control_unit.c -I ../headers
+	gcc tests/flags.c ../components/control_unit.c -I ../headers
+	./cmp.sh answers/flags
+	rm a.out
 fsm:
-	gcc fsm.c ../components/control_unit.c -I ../headers
+	gcc tests/fsm.c ../components/control_unit.c -I ../headers
+	./cmp.sh answers/fsm
+	rm a.out
