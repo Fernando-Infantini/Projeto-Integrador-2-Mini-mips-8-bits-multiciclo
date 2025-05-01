@@ -11,7 +11,7 @@
 #include "ula.h"
 
 int main(int argc, char** argv){
-
+/*
 	char fileN[64];
     int8_t reg[8] = {0};
     data mem[256] = {0};
@@ -205,7 +205,7 @@ int main(int argc, char** argv){
 
 		printf("1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)show intruction to run\n6)make .asm\n7)load data memory data\n8)store data memory data\n9)run\na)load instruction memory\nb)back\n0)quit\n:");
 		do scanf("%c",&casee); while(casee=='\n');
-	}while(casee!='0');
+	}while(casee!='0');*/
     return 0;
 }
 
@@ -313,7 +313,7 @@ void decod(data* a){
 }
 
 void asm_code(data* mem,const char *memo){
-    char temp[30];
+/*    char temp[30];
     control_signal *csignal;
 	int cont=0;
 
@@ -348,11 +348,11 @@ void asm_code(data* mem,const char *memo){
 
 		fclose(arq);
 		fclose(in);
-		free(csignal);
+		free(csignal);*/
 }
 
 void exec(data instruction, uint8_t* pc, int8_t* reg, int8_t* mem){
-
+/*
 	int8_t aluIn, result;
 
     decod(&instruction);
@@ -392,7 +392,7 @@ void exec(data instruction, uint8_t* pc, int8_t* reg, int8_t* mem){
 
     free(csignal);
     free(usignal);
-
+*/
 	return;
 }
 
