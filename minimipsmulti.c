@@ -11,203 +11,77 @@
 #include "ula.h"
 #include "tipo_r.h"
 
+void exec(mips_instance* mips);
+
 int main(int argc, char** argv){
 
-	char fileN[64];
-    int8_t reg[8] = {0};
-    data mem[256] = {0};
-    int16_t A=0, B=0;
-    uint8_t pc=0;
-    control_signal* csignal;
-    int8_t aluIn, result, aluOut;
-	ula_signal* usignal;
-	state* state_stack = NULL;
-    ciclo* block;
+	char fileN[64]; //nome do arquivo
 
-    if(argc>1){
-		strcpy(fileN,argv[1]);
-		ler_mem(mem,fileN);
+	mips_instance mips;
+	state* state_stack = NULL;
+
+	exec(&mips);
+
+	return 0;
+}
+
+void exec(mips_instance* mips){
+	int8_t aIn, bIn, signExt, pcSrc, rt;
+
+	control_signal* csignal = uc(mips->microinstruction,mips->RI);
+
+	if(csignal->irWrite == 1) mips->RI = mips->mem->inst;
+
+	if(RegDst==0){
+		rt = (mips->RI>>6)&7;
+	}else{
+		rt = (mips->RI>>3)&7;
 	}
 
-	char temp[30];
+	switch(csignal->AluSrcA){
+		case 0:
+			aIn = mips->pc;
+		break;
+		case 1:
+			aIn = mips->A;
+		break;
+	}
 
-	char casee=0;
-	do{
-		switch(casee){
-			case '1':
+	switch(csignal->AluSrcB){
+		case 0:
+			bIn = mips->B;
+		break;
+		case 1:
+			bIn = 1;
+		break;
+		case 2:
+			bIn = signExt;
+		break;
+	}
 
-				addState(pc, reg, mem, &state_stack);
-                exec(mem[pc], &pc, reg, mem);
+	ula_signal* usignal = ula(aIn, bIn, csignal->AluFunct);
 
-                printf("\n");
-                for(int i=0;i<16;i++){
-                    for(int j=0;j<16;j++){
-                        printf("|%i",mem[16*i+j]);
-                    }
-                    printf("|\n");
-                }
-                printf("\n");
+	switch(csignal->pcSrc){
+		case 0:
+			pcSrc = usignal->result;
+		break;
+		case 1:
+			pcSrc = mips->aluOut;
+		break;
+		case 2:
+			pcSrc = signExt;
+		break;
+	}
 
-                for(int i=0;i<8;i++){
-                    printf("|%i",reg[i]);
-                }
-                printf("|\n\n");
+	if(csignal->pcWrite == 1 || (csignal->branch && usignal-> zero_flag)) mips->pc = pcSrc;
 
-                decod(mem+pc);
-                csignal = uc(mem[pc].opcode,mem[pc].funct);
-                printf("PC:%u | %s ",pc, csignal->name);
-                if( !csignal->jump ){
-                    if( !csignal->RegDst ) printf("$%u, $%u, %i\n", mem[pc].rt, mem[pc].rs, mem[pc].imm);
-                    else printf("$%u, $%u, $%u\n", mem[pc].rd, mem[pc].rs, mem[pc].rt);
-                }
-                else printf("%u\n",mem[pc].addr);
-                free(csignal);
+	mips->A = mips->mem->data[2*((mips->RI>>9) & 7)+1];
+	mips->B = mips->mem->data[2*((mips->RI>>6) & 7)+1];
+	if(csignal->RegWrite) mips->reg[((mips->RI)>>3)&7+1] = ;
 
-			break;
+	mips->aluOut = usignal->result;
 
-			case '2':
-				for(int i=0;i<16;i++){
-					for(int j=0;j<16;j++){
-						printf("|%i",mem[16*i+j]);
-					}
-					printf("|\n");
-				}
-				printf("\n");
-			break;
-
-			case '3':
-				for(int i=0;i<8;i++){
-					printf("|%i",reg[i]);
-				}
-				printf("|\n\n");
-			break;
-
-            case '4':
-                for(int i=0;i<256;i++){
-                    decod(mem+i);
-                    csignal = uc(mem[i].opcode,mem[i].funct);
-                    printf("Num:%u | %s ",i, csignal->name);
-                    if( !csignal->jump ){
-	                    if( !csignal->RegDst ) printf("$%u, $%u, %i\n", mem[i].rt, mem[i].rs, mem[i].imm);
-	                    else printf("$%u, $%u, $%u\n", mem[i].rd, mem[i].rs, mem[i].rt);
-                    }
-                    else printf("%u\n",mem[i].addr);
-                    free(csignal);
-                }
-            break;
-
-            case '5':
-                decod(mem+pc);
-                csignal = uc(mem[pc].opcode,mem[pc].funct);
-                printf("PC:%u | %s ",pc, csignal->name);
-                if( !csignal->jump ){
-                    if( !csignal->RegDst ) printf("$%u, $%u, %i\n", mem[pc].rt, mem[pc].rs, mem[pc].imm);
-                    else printf("$%u, $%u, $%u\n", mem[pc].rd, mem[pc].rs, mem[pc].rt);
-                }
-                else printf("%u\n",mem[pc].addr);
-                free(csignal);
-			break;
-
-			case '6':
-				asm_code(mem, fileN);
-			break;
-
-			case '7':
-
-				pc=0;
-				for(int i=0;i<8;i++){
-					reg[i] = 0;
-				}
-				for(int i=0;i<256;i++){
-					mem[i].imm = 0;
-				}
-
-				printf("Digite nome do arquivo: ");
-				do fgets(temp,29,stdin); while( !((strcmp(temp,"\n"))||(strcmp(temp,"\n\0"))) );
-				temp[strcspn(temp,"\n")]='\0';
-
-				read_dat(temp, mem);
-
-			break;
-
-			case '8':
-				printf("Digite nome do arquivo: ");
-				do fgets(temp,29,stdin); while( !((strcmp(temp,"\n"))||(strcmp(temp,"\n\0"))) );
-				temp[strcspn(temp,"\n")]='\0';
-
-				write_dat(temp, mem);
-
-			break;
-
-            case '9':
-				{
-					uint8_t break_point;
-					printf("break point:");
-					scanf("%u", (unsigned int*)&break_point);
-					do{
-						addState(pc, reg, mem, &state_stack);
-						exec(mem[pc], &pc, reg, mem);
-					}while(pc != break_point);
-				}
-            break;
-
-			case 'a':
-				printf("file name: ");
-				do fgets(fileN,sizeof(char[64]),stdin); while(!strcmp(fileN,"\n\0"));
-				{
-					char* tmpP = strpbrk(fileN,"\n");
-					if(tmpP) *tmpP = '\0';
-				}
-				for(int i=0;i<8;i++){
-					reg[i] = 0;
-				}
-				for(int i=0;i<256;i++){
-					mem[i].imm=0;
-				}
-				ler_mem(mem,fileN);
-			break;
-
-            case 'b':
-
-				if(state_stack == NULL){
-					printf("no state to return to\n");
-					break;
-				}
-
-				loadState(&pc, reg, mem, &state_stack);
-
-                printf("\n");
-                for(int i=0;i<16;i++){
-                    for(int j=0;j<16;j++){
-                        printf("|%i",mem[16*i+j]);
-                    }
-                    printf("|\n");
-                }
-                printf("\n");
-
-                for(int i=0;i<8;i++){
-                    printf("|%i",reg[i]);
-                }
-                printf("|\n\n");
-
-                decod(mem+pc);
-                csignal = uc(mem[pc].opcode,mem[pc].funct);
-                printf("PC:%u | %s ",pc, csignal->name);
-                if( !csignal->jump ){
-                    if( !csignal->RegDst ) printf("$%u, $%u, %i\n", mem[pc].rt, mem[pc].rs, mem[pc].imm);
-                    else printf("$%u, $%u, $%u\n", mem[pc].rd, mem[pc].rs, mem[pc].rt);
-                }
-                else printf("%u\n",mem[pc].addr);
-                free(csignal);
-
-
-            break;
-        }
-
-		printf("1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)show intruction to run\n6)make .asm\n7)load data memory data\n8)store data memory data\n9)run\na)load instruction memory\nb)back\n0)quit\n:");
-		do scanf("%c",&casee); while(casee=='\n');
-	}while(casee!='0');
-    return 0;
+	return;
 }
 
 
@@ -230,9 +104,7 @@ int main(int argc, char** argv){
 
 
 
-
-
-
+/*
 void ler_mem(data *mem_lida, const char* name){
     FILE *arq;
     arq = fopen(name,"r");
@@ -254,7 +126,7 @@ void ler_mem(data *mem_lida, const char* name){
 
     fclose(arq);
 };
-
+*/
 int binario_para_decimal(char binario[], int inicio, int fim, int complemento2) {
     int decimal = 0;
     int tamanho = strlen(binario);
@@ -294,7 +166,7 @@ int binario_para_decimal(char binario[], int inicio, int fim, int complemento2) 
     return decimal;
 };
 
-void decod(data* a){
+/*void decod(data* a){
 
     union{
         uint8_t u;
@@ -311,8 +183,8 @@ void decod(data* a){
     a->funct = ((a->instrucao>>0)&7);
 	a->addr = ((a->instrucao>>0)&255);
     return;
-}
-
+}*/
+/*
 void asm_code(data* mem,const char *memo){
     char temp[30];
     control_signal *csignal;
@@ -351,51 +223,7 @@ void asm_code(data* mem,const char *memo){
 		fclose(in);
 		free(csignal);
 }
-
-void exec(data instruction, uint8_t* pc, int8_t* reg, int8_t* mem){
-
-	int8_t aluIn, result;
-
-    decod(&instruction);
-
-    control_signal* csignal = uc((unsigned int)instruction.opcode,(unsigned int)instruction.funct);
-
-
-    if( csignal->RegDst==0 ){
-        instruction.rd = instruction.rt;
-    }
-
-    if( !csignal->AluSrc ){
-        aluIn = reg[instruction.rt];
-    } else aluIn = instruction.imm;
-
-    ula_signal* usignal = ula((int16_t)reg[instruction.rs],(int16_t)aluIn,csignal->AluFunc, pc);
-
-    if( csignal->MemWrite == 1 ){
-        mem[usignal->result] = reg[instruction.rt];
-    }
-
-    if( !csignal->Mem2Reg ){
-        result = mem[usignal->result];
-    }else result = usignal->result;
-
-    if( csignal->RegWrite == 1 ){
-        reg[instruction.rd] = result;
-    }
-
-    if( csignal->jump == 1 ){
-        (*pc) = instruction.addr;
-    }else (*pc)++;
-
-    if( csignal->branch && usignal->zero_flag ){
-        (*pc) += instruction.imm;
-    }
-
-    free(csignal);
-    free(usignal);
-
-	return;
-}
+*/
 
 
 
@@ -405,15 +233,14 @@ void exec(data instruction, uint8_t* pc, int8_t* reg, int8_t* mem){
 
 
 
-
-
-void busca_inst(int pc, ciclo* block){
+/*
+void busca_inst(int pc, mips_instance* block){
 	block->RI = block->mem[pc];
 	ula_signal *temp = ula(pc, 1, 0);
 	pc = temp->result;
 }
 
-void decode(ciclo* block, int pc){
+void decode(mips_instance* block, int pc){
 	block->A = block->reg[((block->RI>>9)&7)];
 	block->B = block->reg[((block->RI>>6)&7)];
 
@@ -425,24 +252,14 @@ void decode(ciclo* block, int pc){
 	conv.u = (block->RI)&63;
 	if( (conv.u&32) == 32) conv.u = conv.u | 192;
 
-	block->aluout = ula(pc, conv.s, 0);
+	block->aluOut = ula(pc, conv.s, 0);
 }
 
-void execucaoR(ciclo* block, control_signal* csignal){
-    block->aluout = ula(block->A,block->B,csignal->AluFunct);
+void execucaoR(mips_instance* block, control_signal* csignal){
+    block->aluOut = ula(block->A,block->B,csignal->AluFunct);
+}*/
+/*
+void terminoR( int rd, mips_instance* block, data *mem){
+	block->reg[mem->rd] = block->aluOut;
 }
-
-void terminoR( int rd, ciclo* block, data *mem){
-	block->reg[mem->rd] = block->aluout;
-}
-
-
-
-
-
-
-
-
-
-
-
+*/

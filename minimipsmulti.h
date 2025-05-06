@@ -1,24 +1,18 @@
 typedef struct{
-    uint16_t instrucao;
-    uint8_t opcode;
-    uint8_t rs;
-    uint8_t rd;
-    uint8_t rt;
-    int8_t imm;
-    uint8_t funct;
-	uint8_t addr;
-    char tipo;
+	uint16_t inst;
+	int8_t data[2];
 }data;
 
-typedef struct multiciclo{
-	int8_t mem[256], reg[8];
-	int16_t RI, RDM, A, B, aluOut;
-}ciclo;
-
-//tem que colocar essas coisas em headers diferentes mas vocês que decidem como.
+typedef struct{
+	int8_t reg[8];
+	data mem[256];
+	uint16_t RI;
+	int8_t RDM, A, B, aluOut;
+	uint8_t pc;
+	unsigned int microinstruction;
+}mips_instance;
 
 void ler_mem(data* mem_lida, const char* name);
 int binario_para_decimal(char binario[], int inicio, int fim, int complemento2);
 void decod(data* a);
 void asm_code(data* instruction_mem, const char *memo);
-void exec(data instruction, uint8_t* pc, int8_t* reg, int8_t* data_mem);
