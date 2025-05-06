@@ -9,9 +9,10 @@
 #include "dat_manager.h"
 #include "stack.h"
 #include "ula.h"
+#include "tipo_r.h"
 
 int main(int argc, char** argv){
-/*
+
 	char fileN[64];
     int8_t reg[8] = {0};
     data mem[256] = {0};
@@ -205,7 +206,7 @@ int main(int argc, char** argv){
 
 		printf("1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)show intruction to run\n6)make .asm\n7)load data memory data\n8)store data memory data\n9)run\na)load instruction memory\nb)back\n0)quit\n:");
 		do scanf("%c",&casee); while(casee=='\n');
-	}while(casee!='0');*/
+	}while(casee!='0');
     return 0;
 }
 
@@ -313,7 +314,7 @@ void decod(data* a){
 }
 
 void asm_code(data* mem,const char *memo){
-/*    char temp[30];
+    char temp[30];
     control_signal *csignal;
 	int cont=0;
 
@@ -348,11 +349,11 @@ void asm_code(data* mem,const char *memo){
 
 		fclose(arq);
 		fclose(in);
-		free(csignal);*/
+		free(csignal);
 }
 
 void exec(data instruction, uint8_t* pc, int8_t* reg, int8_t* mem){
-/*
+
 	int8_t aluIn, result;
 
     decod(&instruction);
@@ -392,7 +393,56 @@ void exec(data instruction, uint8_t* pc, int8_t* reg, int8_t* mem){
 
     free(csignal);
     free(usignal);
-*/
+
 	return;
 }
+
+
+
+
+
+
+
+
+
+
+
+void busca_inst(int pc, ciclo* block){
+	block->RI = block->mem[pc];
+	ula_signal *temp = ula(pc, 1, 0);
+	pc = temp->result;
+}
+
+void decode(ciclo* block, int pc){
+	block->A = block->reg[((block->RI>>9)&7)];
+	block->B = block->reg[((block->RI>>6)&7)];
+
+	union{
+        uint8_t u;
+        int8_t s;
+    }conv;
+
+	conv.u = (block->RI)&63;
+	if( (conv.u&32) == 32) conv.u = conv.u | 192;
+
+	block->aluout = ula(pc, conv.s, 0);
+}
+
+void execucaoR(ciclo* block, control_signal* csignal){
+    block->aluout = ula(block->A,block->B,csignal->AluFunct);
+}
+
+void terminoR( int rd, ciclo* block, data *mem){
+	block->reg[mem->rd] = block->aluout;
+}
+
+
+
+
+
+
+
+
+
+
 

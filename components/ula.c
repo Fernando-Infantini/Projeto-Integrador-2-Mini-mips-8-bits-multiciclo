@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "ula.h"
 
-ula_signal* ula(int16_t reg1, int16_t reg2, uint8_t funct, uint8_t pc){
+ula_signal* ula(int16_t reg1, int16_t reg2, uint8_t funct){
 
     ula_signal* result=calloc(1,sizeof(ula_signal));
 	result->overflow=0;

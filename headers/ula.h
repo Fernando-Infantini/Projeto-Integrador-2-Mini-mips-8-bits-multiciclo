@@ -6,5 +6,5 @@ typedef struct{
     int8_t result;
     bool zero_flag, overflow;
 }ula_signal;
-ula_signal* ula(int16_t reg1, int16_t reg2, uint8_t funct, uint8_t pc);
+ula_signal* ula(int16_t reg1, int16_t reg2, uint8_t funct);
 #endif
