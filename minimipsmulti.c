@@ -17,9 +17,25 @@ int main(int argc, char** argv){
 
 	char fileN[64]; //nome do arquivo
 
-	mips_instance mips;
+	mips_instance mips={0};
 	state* state_stack = NULL;
 
+	mips.mem[0].inst = (4<<12)+(0<<9)+(1<<6)+30;
+/*	mips->mem[1] = ;
+	mips->mem[2] = ;
+	mips->mem[3] = ;
+	mips->mem[4] = ;
+	mips->mem[5] = ;
+	mips->mem[6] = ;
+	mips->mem[7] = ;
+	mips->mem[8] = ;
+	mips->mem[9] = ;
+	mips->mem[10] = ;
+*/
+	exec(&mips);
+	exec(&mips);
+	exec(&mips);
+	exec(&mips);
 	exec(&mips);
 
 	return 0;
@@ -27,12 +43,11 @@ int main(int argc, char** argv){
 
 void exec(mips_instance* mips){
 	int8_t aIn, bIn, signExt, pcSrc, rt;
+	uint8_t where;
 
 	control_signal* csignal = uc(mips->microinstruction,mips->RI);
 
-	if(csignal->irWrite == 1) mips->RI = mips->mem->inst;
-
-	if(RegDst==0){
+	if(csignal->RegDst==0){
 		rt = (mips->RI>>6)&7;
 	}else{
 		rt = (mips->RI>>3)&7;
@@ -45,6 +60,16 @@ void exec(mips_instance* mips){
 		case 1:
 			aIn = mips->A;
 		break;
+	}
+
+	{
+		union{
+			int8_t s;
+			uint8_t u;
+		}temp;
+		temp.u = (mips->RI&63);
+		if((temp.u>>6)==1) temp.u = temp.u&(3<<7);
+		signExt = temp.s;
 	}
 
 	switch(csignal->AluSrcB){
@@ -73,13 +98,35 @@ void exec(mips_instance* mips){
 		break;
 	}
 
-	if(csignal->pcWrite == 1 || (csignal->branch && usignal-> zero_flag)) mips->pc = pcSrc;
+	int8_t regisIn;
+	switch(csignal->Mem2Reg){
+		case 0:
+			regisIn = mips->aluOut;
+		break;
+		case 1:
+			regisIn = mips->RDM;
+		break;
+	}
 
-	mips->A = mips->mem->data[2*((mips->RI>>9) & 7)+1];
-	mips->B = mips->mem->data[2*((mips->RI>>6) & 7)+1];
-	if(csignal->RegWrite) mips->reg[((mips->RI)>>3)&7+1] = ;
+	if(csignal->IorD == 0){
+		where = mips->pc;
+	}else{
+		where = mips->aluOut;
+	}
+
+	if(csignal->irWrite == 1) mips->RI = mips->mem[where].inst;
+	mips->RDM = mips->mem[where].data[1];
+
+	if(csignal->pcWrite == 1 || (csignal->branch == 1 && usignal->zero_flag == 1)) mips->pc = pcSrc;
+
+	mips->A = mips->reg[(mips->RI>>9) & 7];
+	mips->B = mips->reg[(mips->RI>>6) & 7];
+	if(csignal->RegWrite) mips->reg[rt] = regisIn;
+	if(csignal->MemWrite) mips->mem[where].data[1] = mips->aluOut;
 
 	mips->aluOut = usignal->result;
+
+	update_microinstruction((mips->RI)>>12,&mips->microinstruction);
 
 	return;
 }

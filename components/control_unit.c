@@ -11,7 +11,7 @@ control_signal* uc(unsigned int microinstruction, unsigned int function){
 	unsigned int tmp=0;
 
 	result->pcWrite = (microinstruction==0)||(microinstruction==10);
-	result->louD = ((microinstruction&14)==4)||(microinstruction==3);
+	result->IorD = ((microinstruction&14)==4)||(microinstruction==3);
 	result->MemWrite = (microinstruction==4);
 	result->irWrite = (microinstruction==0);
 	result->Mem2Reg = (microinstruction==4);
