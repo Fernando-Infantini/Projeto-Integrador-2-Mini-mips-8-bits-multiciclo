@@ -6,7 +6,7 @@
 #include "memoria.h"
 
 
-/*void ler_mem(data *mem_lida, const char* name){
+void ler_mem(mips_instance* state, const char* name){
     FILE *arq;
     arq = fopen(name,"r");
     char temp[20];
@@ -16,18 +16,36 @@
         exit(2);
     };
 
-    int i;
+    int flag=0;
+	int i=0;
 
-    for(i=0;!feof(arq);i++){
-        fgets(temp,sizeof(char[20]),arq);
-        if(!feof(arq)) mem_lida[i].instrucao = (uint16_t)binario_para_decimal(temp,0,15,0);
-    }
-    mem_lida[i].instrucao = 0;
+    while(flag=0 || i<128){ //leitura instrucoes
+		fgets(temp,19,arq);
+		if(strcmp(temp,".data")==0) flag=1;
+
+		if(flag==0){
+			state->mem[i].inst = binario_para_decimal(temp,0,15,0);
+			i++;
+		}
+	}
+
+	if(flag == 0 || i<256){ // se memoria de instrucoes maior que 128 ignorar proximas intrucoes e ler a partir de .data
+		while(strcmp(temp,".data")!=0){
+			fgets(temp,19,arq);
+		}
+	}
+
+	i=128;
+	while(i<256 || !feof(arq)){ //leitura dados
+		fgets(temp,19,arq);
+		state->mem[i].data[1] = binario_para_decimal(temp,0,7,1);
+		i++;
+	}
 
 
     fclose(arq);
 };
-*/
+
 
 int binario_para_decimal(char binario[], int inicio, int fim, int complemento2) {
     int decimal = 0;
