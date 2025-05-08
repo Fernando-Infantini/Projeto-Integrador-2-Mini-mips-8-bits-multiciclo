@@ -3,13 +3,11 @@
 #include <string.h>
 #include <stdint.h>
 
-#include "minimipsmulti.h" //isso aqui não pode existir
-
+#include "memoria.h"
 #include "control_unit.h"
 #include "dat_manager.h"
 #include "stack.h"
 #include "ula.h"
-#include "tipo_r.h"
 
 void exec(mips_instance* mips);
 
@@ -32,7 +30,7 @@ void exec(mips_instance* mips){
 
 	if(csignal->irWrite == 1) mips->RI = mips->mem->inst;
 
-	if(RegDst==0){
+	if(csignal->RegDst==0){
 		rt = (mips->RI>>6)&7;
 	}else{
 		rt = (mips->RI>>3)&7;
@@ -77,7 +75,7 @@ void exec(mips_instance* mips){
 
 	mips->A = mips->mem->data[2*((mips->RI>>9) & 7)+1];
 	mips->B = mips->mem->data[2*((mips->RI>>6) & 7)+1];
-	if(csignal->RegWrite) mips->reg[((mips->RI)>>3)&7+1] = ;
+	if(csignal->RegWrite) mips->reg[((mips->RI)>>3)&7+1] = mips->aluOut; //pode estar errado
 
 	mips->aluOut = usignal->result;
 
@@ -127,44 +125,6 @@ void ler_mem(data *mem_lida, const char* name){
     fclose(arq);
 };
 */
-int binario_para_decimal(char binario[], int inicio, int fim, int complemento2) {
-    int decimal = 0;
-    int tamanho = strlen(binario);
-
-    if (inicio < 0 || fim >= tamanho || inicio > fim) {
-        printf("Índices inválidos.\n");
-        return -1;
-    }
-
-    if (complemento2 == 1) {
-
-        if (binario[inicio] == '1') {
-            int inversao = 0;
-            for (int i = inicio; i <= fim; i++) {
-                if (binario[i] == '0') {
-                    inversao += 1<<(fim - i);
-                }
-            }
-
-            decimal = inversao + 1;
-            decimal = -decimal;
-        } else {
-            for (int i = inicio; i <= fim; i++) {
-                if (binario[i] == '1') {
-                    decimal += 1<<(fim - i);
-                }
-            }
-        }
-    } else {
-        for (int i = inicio; i <= fim; i++) {
-            if (binario[i] == '1') {
-                decimal += 1<<(fim - i);
-            }
-        }
-    }
-
-    return decimal;
-};
 
 /*void decod(data* a){
 
