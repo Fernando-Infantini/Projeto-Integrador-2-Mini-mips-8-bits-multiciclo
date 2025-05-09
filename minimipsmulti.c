@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "memoria.h"
+#include "mips_instance.h"
 #include "control_unit.h"
 #include "dat_manager.h"
 #include "stack.h"
@@ -18,22 +19,6 @@ int main(int argc, char** argv){
 	mips_instance mips={0};
 	state* state_stack = NULL;
 
-	mips.mem[0].inst = (4<<12)+(0<<9)+(1<<6)+30;
-/*	mips->mem[1] = ;
-	mips->mem[2] = ;
-	mips->mem[3] = ;
-	mips->mem[4] = ;
-	mips->mem[5] = ;
-	mips->mem[6] = ;
-	mips->mem[7] = ;
-	mips->mem[8] = ;
-	mips->mem[9] = ;
-	mips->mem[10] = ;
-*/
-	exec(&mips);
-	exec(&mips);
-	exec(&mips);
-	exec(&mips);
 	exec(&mips);
 
 	return 0;
