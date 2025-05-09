@@ -15,11 +15,36 @@ void exec(mips_instance* mips);
 int main(int argc, char** argv){
 
 	char fileN[64]; //nome do arquivo
+	char tmp;
 
 	mips_instance mips={0};
 	state* state_stack = NULL;
 
-	exec(&mips);
+	do{
+
+		for(int i=0;i<8;i++){
+			printf("|%i",mips.reg[i]);
+		}
+		printf("|\n");
+
+		for(int i=0;i<16;i++){
+			for(int j=0;j<16;j++){
+				printf("|%i %i",mips.mem[i].data[0], mips.mem[i].data[1]);
+			}
+			printf("|\n");
+		}
+		printf("\n");
+
+		char I[5], M[7];
+		instruction_name_finder((mips.RI>>12),(mips.RI&7),I);
+		microinstruction_name_finder(mips.microinstruction,M);
+		printf("pc:%i|%s %s\n",mips.pc,I,M);
+		printf("continue? ");
+		exec(&mips);
+
+		do tmp = getc(stdin); while(tmp=='\n');
+
+	}while(tmp=='y');
 
 	return 0;
 }

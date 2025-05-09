@@ -3,9 +3,6 @@
 #include <string.h>
 #include <stdint.h>
 
-int see_here;
-#include "mips_instance.h"
-int not_see;
 #include "memoria.h"
 
 
