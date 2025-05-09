@@ -3,7 +3,7 @@
 #include <stdbool.h>
 typedef struct{
 	bool pcWrite;
-	bool IorD;
+	bool louD;
 	bool MemWrite;
 	bool irWrite;
 	bool Mem2Reg;
@@ -14,7 +14,6 @@ typedef struct{
 	int pcSrc;
 	bool RegDst;
 	bool branch;
-
 	char name[5];
 }control_signal;
 void instruction_name_finder(unsigned int a, unsigned int function, char* name);
