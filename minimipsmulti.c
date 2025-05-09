@@ -19,8 +19,8 @@ int main(int argc, char** argv){
 	state* state_stack = NULL;
 
 	mips.mem[0].inst = (4<<12)+(0<<9)+(1<<6)+30;
-/*	mips->mem[1] = ;
-	mips->mem[2] = ;
+	mips.mem[1].inst = (2<<12)+0;
+/*	mips->mem[2] = ;
 	mips->mem[3] = ;
 	mips->mem[4] = ;
 	mips->mem[5] = ;
