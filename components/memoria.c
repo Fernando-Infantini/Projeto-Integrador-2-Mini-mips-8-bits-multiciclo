@@ -19,7 +19,7 @@ void ler_mem(mips_instance* state, const char* name){
     int flag=0;
 	int i=0;
 
-    while(flag=0 || i<128){ //leitura instrucoes
+    while(flag==0 || i<128){ //leitura instrucoes
 		fgets(temp,19,arq);
 		if(strcmp(temp,".data")==0) flag=1;
 
@@ -38,7 +38,7 @@ void ler_mem(mips_instance* state, const char* name){
 	i=128;
 	while(i<256 || !feof(arq)){ //leitura dados
 		fgets(temp,19,arq);
-		state->mem[i].data[1] = binario_para_decimal(temp,0,7,1);
+		state->mem[i].data[0] = binario_para_decimal(temp,0,7,1);
 		i++;
 	}
 

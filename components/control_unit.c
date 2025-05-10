@@ -12,10 +12,10 @@ control_signal* uc(unsigned int microinstruction, unsigned int function){
 
 	result->pcWrite = (microinstruction==0)||(microinstruction==10);
 	result->IorD = ((microinstruction&14)==4)||(microinstruction==3);
-	result->MemWrite = (microinstruction==4);
+	result->MemWrite = (microinstruction==5);
 	result->irWrite = (microinstruction==0);
 	result->Mem2Reg = (microinstruction==4);
-	result->RegWrite = ((microinstruction&13)==4)||(microinstruction==8);
+	result->RegWrite = (microinstruction&13)==4||(microinstruction==8);
 	result->AluSrcA = ((microinstruction&10)==2)||((microinstruction&10)==8)||((microinstruction&4)==4);
 	tmp = ((microinstruction&6)==4)||((microinstruction&13)==1)||((microinstruction&11)==2);
 	result->AluSrcB = (int)(tmp<<1 | (unsigned int)(microinstruction==0));

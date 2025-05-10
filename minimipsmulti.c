@@ -20,6 +20,12 @@ int main(int argc, char** argv){
 	mips_instance mips={0};
 	state* state_stack = NULL;
 
+	mips.mem[0].inst = (4<<12)+(0<<9)+(1<<6)+1;
+	mips.mem[1].inst = (4<<12)+(4<<9)+(4<<6)+1;
+	mips.mem[2].inst = (4<<12)+(1<<9)+(1<<6)+2;
+	mips.mem[3].inst = (15<<12)+(0<<9)+(1<<6)+1;
+	mips.mem[4].inst = (2<<12)+1;
+
 	do{
 
 		for(int i=0;i<8;i++){
@@ -29,7 +35,7 @@ int main(int argc, char** argv){
 
 		for(int i=0;i<16;i++){
 			for(int j=0;j<16;j++){
-				printf("|%i %i",mips.mem[i].data[0], mips.mem[i].data[1]);
+				printf("|%i %i",mips.mem[16*i+j].data[1], mips.mem[16*i+j].data[0]);
 			}
 			printf("|\n");
 		}
@@ -123,14 +129,14 @@ void exec(mips_instance* mips){
 	}
 
 	if(csignal->irWrite == 1) mips->RI = mips->mem[where].inst;
-	mips->RDM = mips->mem[where].data[1];
+	mips->RDM = mips->mem[where].data[0];
 
 	if(csignal->pcWrite == 1 || (csignal->branch == 1 && usignal->zero_flag == 1)) mips->pc = pcSrc;
 
 	mips->A = mips->reg[(mips->RI>>9) & 7];
 	mips->B = mips->reg[(mips->RI>>6) & 7];
 	if(csignal->RegWrite) mips->reg[rt] = regisIn;
-	if(csignal->MemWrite) mips->mem[where].data[1] = mips->aluOut;
+	if(csignal->MemWrite) mips->mem[where].data[0] = mips->B;
 
 	mips->aluOut = usignal->result;
 
