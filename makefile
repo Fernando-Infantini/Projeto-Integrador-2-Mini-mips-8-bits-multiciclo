@@ -1,6 +1,12 @@
-objects = control_unit.o dat_manager.o stack.o ula.o memoria.o
-all: $(objects)
-	$(CC) -o mips minimipsmulti.c $(objects) -I headers/
+objects = minimipsmulti.o control_unit.o dat_manager.o stack.o ula.o memoria.o
+stdio_menu: libmips.a
+	$(CC) -o mips menus/menu.c -lmips -L ./ -I ./ -I headers/
+
+libmips.a: $(objects)
+	ar rs libmips.a $(objects)
+
+minimipsmulti.o:
+	$(CC) -c minimipsmulti.c -I headers/
 
 control_unit.o:
 	$(CC) -c components/control_unit.c -I headers/

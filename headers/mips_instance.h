@@ -1,5 +1,6 @@
 #ifndef MIPS_INSTANCE_H
 #define MIPS_INSTANCE_H
+#include <stdint.h>
 typedef union{
 	uint16_t inst;
 	int8_t data[2];

@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "memoria.h"
-
+#include "mips_instance.h"
 
 void ler_mem(mips_instance* state, const char* name){
     FILE *arq;
