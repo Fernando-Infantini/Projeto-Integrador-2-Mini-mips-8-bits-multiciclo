@@ -14,4 +14,6 @@ typedef struct{
 	uint8_t pc;
 	unsigned int microinstruction;
 }mips_instance;
+
+void exec(mips_instance* mips);
 #endif
