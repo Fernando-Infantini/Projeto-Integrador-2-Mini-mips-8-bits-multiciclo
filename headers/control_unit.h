@@ -17,8 +17,6 @@ typedef struct{
 
 	char name[5];
 }control_signal;
-void instruction_name_finder(unsigned int inst, unsigned int function, char* name);
-void microinstruction_name_finder(unsigned int microinstruction, char* name);
 control_signal* uc(unsigned int microinstruction, unsigned int function);
 void update_microinstruction(unsigned int inst, unsigned int* microinstruction);
 #endif

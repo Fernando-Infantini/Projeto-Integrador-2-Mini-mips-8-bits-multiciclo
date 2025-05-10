@@ -1,10 +1,8 @@
 #include <stdio.h>
-
 #include "mips_instance.h"
 #include "minimipsmulti.h"
-#include "control_unit.h"
-#include "dat_manager.h"
 #include "memoria.h"
+#include "nameing.h"
 #include "stack.h"
 
 int main(int argc, char** argv){
