@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "headersmips_instance.h"
+#include "mips_instance.h"
 #include "memoria.h"
 #include "nameing.h"
 #include "stack.h"
@@ -8,7 +8,7 @@
 int main(int argc, char** argv){
 
 	char fileN[64]; //nome do arquivo
-	char tmp, opt;
+	char tmp;
 
 	mips_instance mips={0};
 	state* state_stack = NULL;
@@ -19,11 +19,16 @@ int main(int argc, char** argv){
 	mips.mem[3].inst = (15<<12)+(0<<9)+(1<<6)+1;
 	mips.mem[4].inst = (2<<12)+1;
 
+	char opt='1';
+
+    while (opt != '0'){
+
 	printf("1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)load data memory data\n7)store data memory data\n8)run\n9)load instruction memory\nb)back\n0)quit\n:");
 	setbuf(stdin,NULL);
-	scanf("%c",opt);
 
-	while (opt != '0'){ 
+	do scanf("%c",&opt); while (opt == '\n');
+
+    switch(opt){
 
 	case '0':
 	exit(0);
@@ -69,7 +74,6 @@ int main(int argc, char** argv){
 	case '4':
 	printf("Work in progress...\n");
 	break;
-	}
 
 	case '5':
 	printf("Work in progress...\n");
@@ -95,4 +99,6 @@ int main(int argc, char** argv){
 	printf("Work in progress...\n");
 	break; 
 	return 0;
+}
+}
 }
