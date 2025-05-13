@@ -35,6 +35,7 @@ int main(int argc, char** argv){
 	break;
 
 	case '1':
+		exec(mips);
 		for(int i=0;i<8;i++){
 			printf("|%i",mips.reg[i]);
 		}
