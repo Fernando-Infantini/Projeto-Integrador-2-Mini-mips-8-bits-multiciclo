@@ -86,8 +86,10 @@ void exec(mips_instance* mips){
 	mips->A = mips->reg[(mips->RI>>9) & 7];
 	mips->B = mips->reg[(mips->RI>>6) & 7];
 	if(csignal->RegWrite) mips->reg[rt] = regisIn;
-	if(csignal->MemWrite) mips->mem[where].data[0] = mips->B;
-
+	if(csignal->MemWrite){
+		mips->mem[where].data[0] = mips->B;
+		mips->mem[where].data[1] = 0;
+	}
 	mips->aluOut = usignal->result;
 
 	update_microinstruction((mips->RI)>>12,&mips->microinstruction);
