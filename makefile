@@ -1,27 +1,23 @@
-objects = mips_instance.o control_unit.o stack.o ula.o memoria.o nameing.o
+sources = mips_instance.c control_unit.c stack.c ula.c memoria.c nameing.c
+objects = $(sources:.c=.o)
+
 stdio_menu: libmips.a
-	$(CC) -g -o mips menus/menu.c -lmips -L ./ -I headers/
+	$(CC) -o mips menus/menu.c -lmips -L ./ -I headers/
+	rm libmips.a
+
+gdb: $(objects:.o=D.o)
+	$(CC) -o mips menus/menu.c $(objects:.o=D.o) -I headers/ -g
 
 libmips.a: $(objects)
 	ar rs libmips.a $(objects)
 
-mips_instance.o:
-	$(CC) -g -c components/mips_instance.c -I headers/
+$(objects): %.o: %.c
+	$(CC) -c components/$< -I headers/
 
-control_unit.o:
-	$(CC) -g -c components/control_unit.c -I headers/
+$(objects:.o=D.o): %D.o: %.c
+	$(CC) -o $@ -c components/$< -I headers/ -g
 
-stack.o:
-	$(CC) -g -c components/stack.c -I headers/
-
-ula.o:
-	$(CC) -g -c components/ula.c -I headers/
-
-memoria.o:
-	$(CC) -g -c components/memoria.c -I headers/
-
-nameing.o:
-	$(CC) -g -c components/nameing.c -I headers/
+$(sources): %c:
 
 clean:
-	rm $(objects)
+	-rm $(objects) $(objects:.o=D.o)
