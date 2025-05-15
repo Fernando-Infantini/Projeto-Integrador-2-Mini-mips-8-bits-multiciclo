@@ -9,6 +9,7 @@ int main(int argc, char** argv){
 
 	char fileN[64]; //nome do arquivo
 	char tmp;
+	int break_point=0;
 
 	mips_instance mips={0};
 	state* state_stack = NULL;
@@ -89,7 +90,14 @@ int main(int argc, char** argv){
 	break;
 
 	case '8':
-	printf("Work in progress...\n");
+		printf("Informe Break point: ");
+		setbuf(stdin,NULL);
+		scanf("%i",&break_point);
+
+		while(mips.pc<=break_point && mips.pc <128){
+			exec(&mips);
+		}
+
 	break;
 
 	case '9':
