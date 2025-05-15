@@ -5,6 +5,8 @@
 #include "nameing.h"
 #include "stack.h"
 
+void print_state(mips_instance* mips);
+
 int main(int argc, char** argv){
 
 	char fileN[64]; //nome do arquivo
@@ -37,19 +39,7 @@ int main(int argc, char** argv){
 
 	case '1':
 		exec(&mips);
-		for(int i=0;i<8;i++){
-			printf("|%i",mips.reg[i]);
-		}
-		printf("|\n");
-
-		for(int i=0;i<16;i++){
-			for(int j=0;j<16;j++){
-				printf("|%i %i",mips.mem[16*i+j].data[1], mips.mem[16*i+j].data[0]);
-			}
-			printf("|\n");
-		}
-		printf("\n");
-
+		print_state(&mips);
 		char I[5], M[7];
 		instruction_name_finder((mips.RI>>12),(mips.RI&7),I);
 		microinstruction_name_finder(mips.microinstruction,M);
@@ -94,10 +84,8 @@ int main(int argc, char** argv){
 		setbuf(stdin,NULL);
 		scanf("%i",&break_point);
 
-		while(mips.pc<=break_point && mips.pc <128){
-			exec(&mips);
-		}
-
+		do exec(&mips); while(mips.pc!=break_point);
+		print_state(&mips);
 	break;
 
 	case '9':
@@ -111,4 +99,22 @@ int main(int argc, char** argv){
 	return 0;
 }
 }
+}
+
+void print_state(mips_instance* mips){
+
+	for(int i=0;i<8;i++){
+		printf("|%i",mips->reg[i]);
+	}
+	printf("|\n");
+
+	for(int i=0;i<16;i++){
+		for(int j=0;j<16;j++){
+			printf("|%i %i",mips->mem[16*i+j].data[1], mips->mem[16*i+j].data[0]);
+		}
+		printf("|\n");
+	}
+	printf("\n");
+
+	return;
 }
