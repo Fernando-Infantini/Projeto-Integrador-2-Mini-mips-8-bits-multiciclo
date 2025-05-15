@@ -26,7 +26,7 @@ int main(int argc, char** argv){
 
     while (opt != '0'){
 
-	printf("1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)load data memory data\n7)store data memory data\n8)run\n9)load instruction memory\nb)back\n0)quit\n:");
+	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\nb)back\n0)quit\n:");
 	setbuf(stdin,NULL);
 
 	do scanf("%c",&opt); while (opt == '\n');
@@ -47,20 +47,26 @@ int main(int argc, char** argv){
 	break;
 
 	case '2':
+		break_point=0;
+		printf("\n==========Memória de instrucoes/dados==========\n");
 	for(int i=0;i<16;i++){
 		for(int j=0;j<16;j++){
-			printf("|%i %i",mips.mem[16*i+j].data[1], mips.mem[16*i+j].data[0]);
+			printf("|pos %i: %i %i",break_point,mips.mem[16*i+j].data[1], mips.mem[16*i+j].data[0]);
+			break_point++;
 		}
 		printf("|\n");
 	}
 	printf("\n");
+	break_point=0;
 	break;
 
 	case '3':
+		printf("\n==========Registradores==========\n");
 	for(int i=0;i<8;i++){
-		printf("|%i",mips.reg[i]);
+		printf("|$%i: %i",i,mips.reg[i]);
 	}
 	printf("|\n");
+	printf("|PC: %i|RI: %i |A: %i|B: %i|RDM: %i|AluOut: %i|\n",mips.pc, mips.RI, mips.A, mips.B, mips.RDM, mips.aluOut);
 	break;
 
 	case '4':
@@ -76,10 +82,6 @@ int main(int argc, char** argv){
 	break;
 
 	case '7':
-	printf("Work in progress...\n");
-	break;
-
-	case '8':
 		printf("Informe Break point: ");
 		setbuf(stdin,NULL);
 		scanf("%i",&break_point);
