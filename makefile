@@ -1,6 +1,6 @@
 objects = mips_instance.o control_unit.o stack.o ula.o memoria.o nameing.o
 stdio_menu: libmips.a
-	$(CC) -g -o mips menus/menu.c -lmips -L ./ -I ./ -I headers/
+	$(CC) -g -o mips menus/menu.c -lmips -L ./ -I headers/
 
 libmips.a: $(objects)
 	ar rs libmips.a $(objects)
