@@ -6,45 +6,53 @@
 #include "memoria.h"
 #include "mips_instance.h"
 
-void ler_mem(mips_instance* state, const char* name){
+void ler_mem(mips_instance* state) {
+    char name[20];
+    printf("Digite nome do arquivo: ");
+    setbuf(stdin, NULL);
+    scanf("%s", name);
+
     FILE *arq;
-    arq = fopen(name,"r");
+    arq = fopen(name, "r");
     char temp[20];
 
-    if(arq == NULL){
+    if (arq == NULL) {
         printf("ERRO NA LEITURA DA MEMORIA DE INSTRUCOES\n");
         exit(2);
-    };
+    }
 
-    int flag=0;
-	int i=0;
+    int flag = 0; // Para marcar quando encontramos ".data"
+    int i = 0;
 
-    while(flag==0 || i<128){ //leitura instrucoes
-		fgets(temp,19,arq);
-		if(strcmp(temp,".data")==0) flag=1;
+    // Leitura das instruções até encontrar o .data ou até i alcançar 128
+    while (flag == 0 && i < 128) {
+        if (fgets(temp, 19, arq) == NULL) break;  // Verifica fim do arquivo
+        temp[strcspn(temp, "\n")] = '\0';  // Remover \n se presente
+        if (strcmp(temp, ".data") == 0) {
+            flag = 1;  // Encontramos ".data", agora vamos ler os dados
+            continue;  // Ignora a linha ".data"
+        }
 
-		if(flag==0){
-			state->mem[i].inst = binario_para_decimal(temp,0,15,0);
-			i++;
-		}
-	}
+        if (flag == 0) {
+            state->mem[i].inst = binario_para_decimal(temp, 0, 15, 0);  // Lê instrução binária
+            i++;
+        }
+    }
 
-	if(flag == 0 || i<256){ // se memoria de instrucoes maior que 128 ignorar proximas intrucoes e ler a partir de .data
-		while(strcmp(temp,".data")!=0){
-			fgets(temp,19,arq);
-		}
-	}
-
-	i=128;
-	while(i<256 || !feof(arq)){ //leitura dados
-		fgets(temp,19,arq);
-		state->mem[i].data[0] = binario_para_decimal(temp,0,7,1);
-		i++;
-	}
-
+    // Leitura de dados a partir do índice 128 até o limite de 255
+    i = 128; // Agora começamos a ler dados na posição 128
+    while (i < 256 && fgets(temp, 19, arq) != NULL) {  // Enquanto não atingir o fim do arquivo
+        temp[strcspn(temp, "\n")] = '\0';  // Remover \n se presente
+        // Leitura dos dados após ".data"
+        state->mem[i].data[0] = binario_para_decimal(temp, 0, 15, 1); // Leitura de 16 bits
+        i++;
+    }
 
     fclose(arq);
-};
+}
+
+
+
 
 
 int binario_para_decimal(char binario[], int inicio, int fim, int complemento2) {

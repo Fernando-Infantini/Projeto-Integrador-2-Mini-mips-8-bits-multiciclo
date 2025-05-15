@@ -101,7 +101,8 @@ int main(int argc, char** argv){
 	break;
 
 	case '9':
-	printf("Work in progress...\n");
+		ler_mem(&mips);
+
 	break; 
 
 	case 'b':
