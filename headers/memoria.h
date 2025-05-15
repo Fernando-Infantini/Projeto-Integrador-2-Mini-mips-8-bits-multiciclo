@@ -5,4 +5,5 @@ void ler_mem(mips_instance* state);
 int binario_para_decimal(char binario[], int inicio, int fim, int complemento2);
 void decod(data* a);
 void asm_code(data* instruction_mem, const char *memo);
+void writeASM(mips_instance* state, mips_instance mips);
 #endif

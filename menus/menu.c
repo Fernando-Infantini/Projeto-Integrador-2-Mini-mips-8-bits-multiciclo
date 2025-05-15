@@ -51,10 +51,9 @@ int main(int argc, char** argv){
 		printf("\n==========Memória de instrucoes/dados==========\n");
 	for(int i=0;i<16;i++){
 		for(int j=0;j<16;j++){
-			printf("|pos %i: %i %i",break_point,mips.mem[16*i+j].data[1], mips.mem[16*i+j].data[0]);
+			printf("|pos %i: %i %i\n",break_point,mips.mem[16*i+j].data[1], mips.mem[16*i+j].data[0]);
 			break_point++;
 		}
-		printf("|\n");
 	}
 	printf("\n");
 	break_point=0;
@@ -66,6 +65,7 @@ int main(int argc, char** argv){
 		printf("|$%i: %i",i,mips.reg[i]);
 	}
 	printf("|\n");
+	printf("\n");
 	printf("|PC: %i|RI: %i |A: %i|B: %i|RDM: %i|AluOut: %i|\n",mips.pc, mips.RI, mips.A, mips.B, mips.RDM, mips.aluOut);
 	break;
 
@@ -74,7 +74,7 @@ int main(int argc, char** argv){
 	break;
 
 	case '5':
-	printf("Work in progress...\n");
+	writeASM(&mips,mips);
 	break;
 
 	case '6':
@@ -90,10 +90,9 @@ int main(int argc, char** argv){
 		print_state(&mips);
 	break;
 
-	case '9':
+	case '8':
 		ler_mem(&mips);
-
-	break; 
+	break;
 
 	case 'b':
 	printf("Work in progress...\n");
