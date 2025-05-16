@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-
 #include "memoria.h"
 #include "mips_instance.h"
+#include "nameing.h"
 
 void ler_mem(mips_instance* state) {
     char name[20];
@@ -93,6 +93,30 @@ int binario_para_decimal(char binario[], int inicio, int fim, int complemento2) 
 
     return decimal;
 };
+
+void writeASM(mips_instance* state, mips_instance mips){
+
+    int i = 0;
+    char name[15];
+
+    char temp[30];
+    //control_signal *csignal;
+    int cont=0;
+
+    printf("Digite nome do arquivo .asm: ");
+    setbuf(stdin,NULL);
+    scanf("%s",temp);
+
+    FILE *arq = fopen(temp,"w");
+
+    do{
+        instruction_name_finder((state->mem[i].inst>>12),(state->mem[i].inst&7),name);
+
+        fprintf(arq,"%s\n",name);
+        i++;
+        } while (i < 128);
+}
+
 
 /*
 void asm_code(data* mem,const char *memo){
