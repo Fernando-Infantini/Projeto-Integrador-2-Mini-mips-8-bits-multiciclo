@@ -1,9 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 #include "mips_instance.h"
 #include "memoria.h"
 #include "nameing.h"
 #include "stack.h"
+
+#define print_state(mips) print_memory((mips)); print_registers((mips))
+void print_memory(mips_instance* mips);
+void print_registers(mips_instance* mips);
+void const_size(char* out, int in);
 
 int main(int argc, char** argv){
 
@@ -24,8 +31,7 @@ int main(int argc, char** argv){
 
     while (opt != '0'){
 
-	printf("1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)load data memory data\n7)store data memory data\n8)run\n9)load instruction memory\nb)back\n0)quit\n:");
-	setbuf(stdin,NULL);
+	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\nb)back\n0)quit\n:");
 
 	do scanf("%c",&opt); while (opt == '\n');
 
@@ -36,20 +42,9 @@ int main(int argc, char** argv){
 	break;
 
 	case '1':
+		pushState(&mips, &state_stack);
 		exec(&mips);
-		for(int i=0;i<8;i++){
-			printf("|%i",mips.reg[i]);
-		}
-		printf("|\n");
-
-		for(int i=0;i<16;i++){
-			for(int j=0;j<16;j++){
-				printf("|%i %i",mips.mem[16*i+j].data[1], mips.mem[16*i+j].data[0]);
-			}
-			printf("|\n");
-		}
-		printf("\n");
-
+		print_state(&mips);
 		char I[5], M[7];
 		instruction_name_finder((mips.RI>>12),(mips.RI&7),I);
 		microinstruction_name_finder(mips.microinstruction,M);
@@ -57,20 +52,11 @@ int main(int argc, char** argv){
 	break;
 
 	case '2':
-	for(int i=0;i<16;i++){
-		for(int j=0;j<16;j++){
-			printf("|%i %i",mips.mem[16*i+j].data[1], mips.mem[16*i+j].data[0]);
-		}
-		printf("|\n");
-	}
-	printf("\n");
+		print_memory(&mips);
 	break;
 
 	case '3':
-	for(int i=0;i<8;i++){
-		printf("|%i",mips.reg[i]);
-	}
-	printf("|\n");
+		print_registers(&mips);
 	break;
 
 	case '4':
@@ -78,7 +64,13 @@ int main(int argc, char** argv){
 	break;
 
 	case '5':
-	printf("Work in progress...\n");
+		{
+			printf("File name: ");
+			do fgets(fileN,64,stdin); while(strcmp(fileN,"\n\0")==0);
+			char* match = strpbrk(fileN,"\n\0");
+			if(match!=NULL) (*match) = '\0';
+			gen_asm(&mips,fileN);
+		}
 	break;
 
 	case '6':
@@ -86,29 +78,63 @@ int main(int argc, char** argv){
 	break;
 
 	case '7':
-	printf("Work in progress...\n");
+		printf("Informe Break point: ");
+		scanf("%i",&break_point);
+
+		do exec(&mips); while(mips.pc!=break_point);
+		print_state(&mips);
 	break;
 
 	case '8':
-		printf("Informe Break point: ");
-		setbuf(stdin,NULL);
-		scanf("%i",&break_point);
-
-		while(mips.pc<=break_point && mips.pc <128){
-			exec(&mips);
-		}
-
+			ler_mem(&mips);
 	break;
 
-	case '9':
-		ler_mem(&mips);
-
-	break; 
-
 	case 'b':
-	printf("Work in progress...\n");
-	break; 
+		if(popState(&mips,&state_stack)) printf("no state to return to\n");
+		else print_state(&mips);
+	break;
 	return 0;
 }
 }
+}
+
+void print_memory(mips_instance* mips){
+	printf("\n==========Memória de instrucoes/dados==========\n    ");
+	for(int j=0;j<8;j++){
+		printf("      %i   ", j);
+	}
+	printf("\n");
+	for(int i=0;i<32;i++){
+		char tmpb[5];
+		const_size(tmpb,8*i);
+		printf("%s", tmpb);
+		for(int j=0;j<8;j++){
+			char tmp[2][5] = {0};
+			const_size(tmp[1],mips->mem[8*i+j].data[1]);
+			const_size(tmp[0],mips->mem[8*i+j].data[0]);
+			printf("|%s %s", tmp[1], tmp[0]);
+		}
+		printf("|\n");
+	}
+	printf("\n");
+	return;
+}
+void print_registers(mips_instance* mips){
+	printf("\n==========Registradores==========\n");
+	for(int i=0;i<8;i++){
+		printf("|$%i: %i",i,mips->reg[i]);
+	}
+	printf("|\n");
+	printf("|PC: %i|RI: %i |A: %i|B: %i|RDM: %i|AluOut: %i|\n", mips->pc, mips->RI, mips->A, mips->B, mips->RDM, mips->aluOut);
+	return;
+}
+
+void const_size(char* out, int in){
+	char tmp[5];
+	sprintf(tmp,"%i",in);
+	int size = 4-strlen(tmp);
+	out[size]='\0';
+	if(out!=NULL) strcpy(out+size,tmp);
+	for(int i=0; i<size; i++) out[i]=' ';
+	return;
 }

@@ -32,7 +32,7 @@ void exec(mips_instance* mips){
 			uint8_t u;
 		}temp;
 		temp.u = (mips->RI&63);
-		if((temp.u>>6)==1) temp.u = temp.u&(3<<7);
+		if((temp.u&32)==32) temp.u = temp.u|(3<<6);
 		signExt = temp.s;
 	}
 

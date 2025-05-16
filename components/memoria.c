@@ -5,8 +5,11 @@
 
 #include "memoria.h"
 #include "mips_instance.h"
+#include "nameing.h"
+#include "control_unit.h"
 
-void ler_mem(mips_instance* state) {
+
+void ler_mem(mips_instance* state){
     char name[20];
     printf("Digite nome do arquivo: ");
     setbuf(stdin, NULL);
@@ -18,7 +21,7 @@ void ler_mem(mips_instance* state) {
 
     if (arq == NULL) {
         printf("ERRO NA LEITURA DA MEMORIA DE INSTRUCOES\n");
-        exit(2);
+        return;
     }
 
     int flag = 0; // Para marcar quando encontramos ".data"
@@ -94,43 +97,48 @@ int binario_para_decimal(char binario[], int inicio, int fim, int complemento2) 
     return decimal;
 };
 
-/*
-void asm_code(data* mem,const char *memo){
-    char temp[30];
-    control_signal *csignal;
-	int cont=0;
+int gen_asm(mips_instance* mips, const char* name){
 
-	printf("Digite nome do arquivo .asm: ");
-	scanf("%s",temp);
+    FILE *arq = fopen(name,"w");
+	if(arq==NULL) return 2;
 
-    FILE* arq = fopen(temp,"w");
-	FILE* in = fopen(memo,"r");
+	for(int i=0; i<128;i++){
+		unsigned int mi = 1;
+		unsigned int inst = mips->mem[i].inst;
+		update_microinstruction(inst>>12,&mi);
+		char tmp[5];
+		instruction_name_finder(inst>>12,inst&7,tmp);
 
+		if(inst == 0){
+			fclose(arq);
+			return 0;
+		}
 
-    if(in == NULL){
-        printf("ERRO NA LEITURA DA MEMORIA DE INSTRUCOES\n");
-        exit(2);
-    };
-
-
-	while(!feof(in)){
-		fgets(temp,20,in);
-		cont++;
+		switch(mi){
+			case 7:
+				fprintf(arq,"%s $%u, $%u, $%u\n", tmp, (inst>>3)&7, (inst>>9)&7, (inst>>6)&7);
+			break;
+			case 9:
+				goto immediat;
+			break;
+			case 10:
+				fprintf(arq,"%s %u\n", tmp, inst&255);
+			break;
+			default:
+				update_microinstruction(inst>>12,&mi);
+				switch(mi){
+					case 6:
+					immediat:
+						fprintf(arq,"%s $%u, $%u, %u\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
+					break;
+					default:
+						fprintf(arq,"%s $%u, $%u(%u)\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
+					break;
+				}
+			break;
+		}
 	}
-
-        for(int i=0;i < cont; i++){
-            decod(mem+i);
-                    csignal = uc(mem[i].opcode,mem[i].funct);
-                    fprintf(arq, "%s ", csignal->name);
-                    if( !csignal->jump ){
-                        if( !csignal->RegDst ) fprintf(arq, "$%u, $%u, %i\n", mem[i].rt, mem[i].rs, mem[i].imm);
-                        else fprintf(arq,"$%u, $%u, $%u\n", mem[i].rd, mem[i].rs, mem[i].rt);
-                    }
-                    else fprintf(arq, "%u\n",mem[i].addr);
-        }
-
-		fclose(arq);
-		fclose(in);
-		free(csignal);
+	fclose(arq);
+	return 0;
 }
-*/
+
