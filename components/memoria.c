@@ -2,15 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+
 #include "memoria.h"
 #include "mips_instance.h"
 #include "nameing.h"
+#include "control_unit.h"
 
-void ler_mem(mips_instance* state) {
-    char name[20];
-    printf("Digite nome do arquivo: ");
-    setbuf(stdin, NULL);
-    scanf("%s", name);
+void ler_mem(mips_instance* state, const char* name){
 
     FILE *arq;
     arq = fopen(name, "r");
@@ -18,7 +16,7 @@ void ler_mem(mips_instance* state) {
 
     if (arq == NULL) {
         printf("ERRO NA LEITURA DA MEMORIA DE INSTRUCOES\n");
-        exit(2);
+		return;
     }
 
     int flag = 0; // Para marcar quando encontramos ".data"
@@ -94,27 +92,43 @@ int binario_para_decimal(char binario[], int inicio, int fim, int complemento2) 
     return decimal;
 };
 
-void writeASM(mips_instance* state, mips_instance mips){
+int gen_asm(mips_instance* mips, const char* name){
 
-    int i = 0;
-    char name[15];
+    FILE *arq = fopen(name,"w");
+	if(arq==NULL) return 2;
 
-    char temp[30];
-    //control_signal *csignal;
-    int cont=0;
-
-    printf("Digite nome do arquivo .asm: ");
-    setbuf(stdin,NULL);
-    scanf("%s",temp);
-
-    FILE *arq = fopen(temp,"w");
-
-    do{
-        instruction_name_finder((state->mem[i].inst>>12),(state->mem[i].inst&7),name);
-
-        fprintf(arq,"%s\n",name);
-        i++;
-        } while (i < 128);
+	for(int i=0; i<256;i++){
+		unsigned int mi = 1;
+		unsigned int inst = mips->mem[i].inst;
+		update_microinstruction(inst>>12,&mi);
+		char tmp[5];
+		instruction_name_finder(inst>>12,inst&7,tmp);
+		switch(mi){
+			case 7:
+				fprintf(arq,"%s $%u, $%u, $%u\n", tmp, (inst>>3)&7, (inst>>9)&7, (inst>>6)&7);
+			break;
+			case 9:
+				goto immediat;
+			break;
+			case 10:
+				fprintf(arq,"%s %u\n", tmp, inst&255);
+			break;
+			default:
+				update_microinstruction(inst>>12,&mi);
+				switch(mi){
+					case 6:
+					immediat:
+						fprintf(arq,"%s $%u, $%u, %u\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
+					break;
+					default:
+						fprintf(arq,"%s $%u, $%u(%u)\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
+					break;
+				}
+			break;
+		}
+	}
+	fclose(arq);
+	return 0;
 }
 
 

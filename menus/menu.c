@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "mips_instance.h"
 #include "memoria.h"
 #include "nameing.h"
@@ -63,7 +64,13 @@ int main(int argc, char** argv){
 	break;
 
 	case '5':
-	printf("Work in progress...\n");
+		{
+			printf("File name: ");
+			do fgets(fileN,64,stdin); while(strcmp(fileN,"\n\0")==0);
+			char* match = strpbrk(fileN,"\n\0");
+			if(match!=NULL) (*match) = '\0';
+			gen_asm(&mips,fileN);
+		}
 	break;
 
 	case '6':
@@ -79,7 +86,13 @@ int main(int argc, char** argv){
 	break;
 
 	case '9':
-		ler_mem(&mips);
+		{
+			printf("File name: ");
+			do fgets(fileN,64,stdin); while(strcmp(fileN,"\n\0")==0);
+			char* match = strpbrk(fileN,"\n\0");
+			if(match!=NULL) (*match) = '\0';
+			ler_mem(&mips,fileN);
+		}
 	break;
 
 	case 'b':
