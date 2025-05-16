@@ -3,7 +3,6 @@ objects = $(sources:.c=.o)
 
 stdio_menu: libmips.a
 	$(CC) -o mips menus/menu.c -lmips -L ./ -I headers/
-	rm libmips.a
 
 gdb: $(objects:.o=D.o)
 	$(CC) -o mips menus/menu.c $(objects:.o=D.o) -I headers/ -g
