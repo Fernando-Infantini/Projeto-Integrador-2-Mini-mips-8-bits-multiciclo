@@ -93,20 +93,20 @@ int main(int argc, char** argv){
 
 void print_memory(mips_instance* mips){
 	printf("\n==========Memória de instrucoes/dados==========\n    ");
-	for(int j=0;j<16;j++){
+	for(int j=0;j<8;j++){
 		char tmp[5];
 		const_size(tmp,j);
 		printf("|     %s", tmp);
 	}
 	printf("|\n");
-	for(int i=0;i<16;i++){
+	for(int i=0;i<32;i++){
 		char tmpb[5];
-		const_size(tmpb,16*i);
+		const_size(tmpb,8*i);
 		printf("%s", tmpb);
-		for(int j=0;j<16;j++){
+		for(int j=0;j<8;j++){
 			char tmp[2][5] = {0};
-			const_size(tmp[1],mips->mem[16*i+j].data[1]);
-			const_size(tmp[0],mips->mem[16*i+j].data[0]);
+			const_size(tmp[1],mips->mem[8*i+j].data[1]);
+			const_size(tmp[0],mips->mem[8*i+j].data[0]);
 			printf("|%s %s", tmp[1], tmp[0]);
 		}
 		printf("|\n");
