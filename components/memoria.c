@@ -9,25 +9,17 @@
 #include "control_unit.h"
 
 
-void ler_mem(mips_instance* state){
-    char name[20];
-    printf("Digite nome do arquivo: ");
-    setbuf(stdin, NULL);
-    scanf("%s", name);
+int ler_mem(mips_instance* state, const char* name){
 
-    FILE *arq;
-    arq = fopen(name, "r");
-    char temp[20];
+    FILE *arq = fopen(name, "r");
 
-    if (arq == NULL) {
-        printf("ERRO NA LEITURA DA MEMORIA DE INSTRUCOES\n");
-        return;
-    }
+    if (arq == NULL) return 2;
 
     int flag = 0; // Para marcar quando encontramos ".data"
     int i = 0;
 
     // Leitura das instruções até encontrar o .data ou até i alcançar 128
+    char temp[20];
     while (flag == 0 && i < 128) {
         if (fgets(temp, 19, arq) == NULL) break;  // Verifica fim do arquivo
         temp[strcspn(temp, "\n")] = '\0';  // Remover \n se presente
@@ -47,11 +39,12 @@ void ler_mem(mips_instance* state){
     while (i < 256 && fgets(temp, 19, arq) != NULL) {  // Enquanto não atingir o fim do arquivo
         temp[strcspn(temp, "\n")] = '\0';  // Remover \n se presente
         // Leitura dos dados após ".data"
-        state->mem[i].data[0] = binario_para_decimal(temp, 0, 15, 1); // Leitura de 16 bits
+        state->mem[i].data[0] = binario_para_decimal(temp, 0, 7, 1); // Leitura de 16 bits
         i++;
     }
 
     fclose(arq);
+	return 0;
 }
 
 

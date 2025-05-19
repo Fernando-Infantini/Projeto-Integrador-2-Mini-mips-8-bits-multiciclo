@@ -69,7 +69,7 @@ int main(int argc, char** argv){
 			do fgets(fileN,64,stdin); while(strcmp(fileN,"\n\0")==0);
 			char* match = strpbrk(fileN,"\n\0");
 			if(match!=NULL) (*match) = '\0';
-			gen_asm(&mips,fileN);
+			if(gen_asm(&mips,fileN)==2) printf("Unable to create file");
 		}
 	break;
 
@@ -86,7 +86,13 @@ int main(int argc, char** argv){
 	break;
 
 	case '8':
-			ler_mem(&mips);
+		{
+			printf("File name: ");
+			do fgets(fileN,64,stdin); while(strcmp(fileN,"\n\0")==0);
+			char* match = strpbrk(fileN,"\n\0");
+			if(match!=NULL) (*match) = '\0';
+			if(ler_mem(&mips,fileN)==2) printf("Unable to open file");
+		}
 	break;
 
 	case 'b':
