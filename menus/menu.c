@@ -11,6 +11,7 @@
 void print_memory(mips_instance* mips);
 void print_registers(mips_instance* mips);
 void const_size(char* out, int in);
+void print_uc_sig(mips_instance* mips);
 
 int main(int argc, char** argv){
 
@@ -31,7 +32,7 @@ int main(int argc, char** argv){
 
     while (opt != '0'){
 
-	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\nb)back\n0)quit\n:");
+	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\n9)show control unit signals\nb)back\n0)quit\n:");
 
 	do scanf("%c",&opt); while (opt == '\n');
 
@@ -95,6 +96,10 @@ int main(int argc, char** argv){
 		}
 	break;
 
+	case '9':
+		print_uc_sig(&mips);
+	break;
+
 	case 'b':
 		if(popState(&mips,&state_stack)) printf("no state to return to\n");
 		else print_state(&mips);
@@ -131,7 +136,13 @@ void print_registers(mips_instance* mips){
 		printf("|$%i: %i",i,mips->reg[i]);
 	}
 	printf("|\n");
-	printf("|PC: %i|RI: %i |A: %i|B: %i|RDM: %i|AluOut: %i|\n", mips->pc, mips->RI, mips->A, mips->B, mips->RDM, mips->aluOut);
+	printf("\n");
+	printf("|PC: %i|\n",mips->pc);
+	return;
+}
+
+void print_uc_sig(mips_instance* mips){
+	printf("\n|PC: %i|RI: %i |A: %i|B: %i|RDM: %i|AluOut: %i|\n", mips->pc, mips->RI, mips->A, mips->B, mips->RDM, mips->aluOut);
 	return;
 }
 
