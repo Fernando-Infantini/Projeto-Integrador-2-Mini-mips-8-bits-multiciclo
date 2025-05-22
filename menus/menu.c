@@ -75,7 +75,7 @@ int main(int argc, char** argv){
 	break;
 
 	case '6':
-	printf("Work in progress...\n");
+	save_mem(mips);
 	break;
 
 	case '7':

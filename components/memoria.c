@@ -135,3 +135,50 @@ int gen_asm(mips_instance* mips, const char* name){
 	return 0;
 }
 
+void decimal_para_binario(char binario[], int num, int bits, int usar_complemento){
+    int i = bits - 1;
+
+    for (int j = 0; j < bits; j++) {
+        binario[j] = '0';
+    }
+    binario[bits] = '\0';
+
+    if (usar_complemento && num < 0) {
+        num = (1 << bits) + num;
+    }
+
+    while (num > 0 && i >= 0) {
+        binario[i--] = (num % 2) + '0';
+        num /= 2;
+    }
+
+}
+
+void save_mem(mips_instance state){
+	char temp[256];
+	while(getchar() != '\n');
+	printf("Digite nome do arquivo: ");
+	setbuf(stdin,NULL);
+	fgets(temp,255,stdin);
+
+	FILE *arq = fopen(temp,"w");
+	int i=0;
+
+
+	while(state.mem[i].inst != 0 && i<128){
+		decimal_para_binario(temp, state.mem[i].inst, 16, 0);
+		fprintf(arq, "%s\n", temp);
+		i++;
+	}
+
+	fprintf(arq,".data\n");
+
+	i=128;
+	while(i<256){
+		decimal_para_binario(temp, state.mem[i].data[0], 8, 1);
+		fprintf(arq, "00000000%s\n", temp);
+		i++;
+	}
+
+	fclose(arq);
+}
