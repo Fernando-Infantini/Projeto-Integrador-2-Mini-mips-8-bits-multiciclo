@@ -12,6 +12,8 @@ void print_memory(mips_instance* mips);
 void print_registers(mips_instance* mips);
 void const_size(char* out, int in);
 void print_uc_sig(mips_instance* mips);
+void print_mem_hex(mips_instance* mips);
+char to_hex(unsigned int x);
 
 int main(int argc, char** argv){
 
@@ -32,7 +34,7 @@ int main(int argc, char** argv){
 
     while (opt != '0'){
 
-	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\n9)show control unit signals\nb)back\n0)quit\n:");
+	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\n9)show control unit signals\nb)back\nx)print hex\n0)quit\n:");
 
 	do scanf("%c",&opt); while (opt == '\n');
 
@@ -104,6 +106,9 @@ int main(int argc, char** argv){
 		if(popState(&mips,&state_stack)) printf("no state to return to\n");
 		else print_state(&mips);
 	break;
+	case 'x':
+		print_mem_hex(&mips);
+	break;
 	return 0;
 }
 }
@@ -154,4 +159,34 @@ void const_size(char* out, int in){
 	if(out!=NULL) strcpy(out+size,tmp);
 	for(int i=0; i<size; i++) out[i]=' ';
 	return;
+}
+
+void print_mem_hex(mips_instance* mips){
+	printf("\n==========Memória de instrucoes/dados==========\n    ");
+	for(int j=0;j<8;j++){
+		printf("   %i ", j);
+	}
+	printf("\n");
+	for(int i=0;i<32;i++){
+		char tmpb[5];
+		const_size(tmpb,8*i);
+		printf("%s", tmpb);
+		for(int j=0;j<8;j++){
+			char tmp[5] = {0};
+			tmp[0] = to_hex((mips->mem[8*i+j].inst>>12)&15);
+			tmp[1] = to_hex((mips->mem[8*i+j].inst>>8)&15);
+			tmp[2] = to_hex((mips->mem[8*i+j].inst>>4)&15);
+			tmp[3] = to_hex(mips->mem[8*i+j].inst&15);
+			printf("|%s", tmp);
+		}
+		printf("|\n");
+	}
+	printf("\n");
+	return;
+}
+
+char to_hex(unsigned int x){
+	if( (0<=x) && (x<10) ) return '0'+x;
+	else if( (9<x) && (x<16) ) return 'a'+x-10;
+	else return '?';
 }
