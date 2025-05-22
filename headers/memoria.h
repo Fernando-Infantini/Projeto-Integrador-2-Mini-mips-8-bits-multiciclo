@@ -7,4 +7,5 @@ void decod(data* a);
 int gen_asm(mips_instance* state, const char* name);
 void decimal_para_binario(char binario[], int num, int bits, int usar_complemento);
 void save_mem(mips_instance state);
+void print_instructions(mips_instance* mips);
 #endif

@@ -24,11 +24,10 @@ int main(int argc, char** argv){
 	mips_instance mips={0};
 	state* state_stack = NULL;
 
-	mips.mem[0].inst = (4<<12)+(0<<9)+(1<<6)+1;
-	mips.mem[1].inst = (4<<12)+(4<<9)+(4<<6)+1;
-	mips.mem[2].inst = (4<<12)+(1<<9)+(1<<6)+2;
-	mips.mem[3].inst = (15<<12)+(0<<9)+(1<<6)+1;
-	mips.mem[4].inst = (2<<12)+1;
+	if(argc>1){
+		strcpy(fileN, argv[1]);
+		if(ler_mem(&mips,fileN)==2) printf("unable to open file");
+	}
 
 	char opt='1';
 
@@ -108,6 +107,9 @@ int main(int argc, char** argv){
 	break;
 	case 'x':
 		print_mem_hex(&mips);
+	break;
+	case 'i':
+		print_instructions(&mips);
 	break;
 	return 0;
 }
