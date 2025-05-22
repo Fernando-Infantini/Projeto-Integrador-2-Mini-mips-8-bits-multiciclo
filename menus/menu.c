@@ -24,17 +24,16 @@ int main(int argc, char** argv){
 	mips_instance mips={0};
 	state* state_stack = NULL;
 
-	mips.mem[0].inst = (4<<12)+(0<<9)+(1<<6)+1;
-	mips.mem[1].inst = (4<<12)+(4<<9)+(4<<6)+1;
-	mips.mem[2].inst = (4<<12)+(1<<9)+(1<<6)+2;
-	mips.mem[3].inst = (15<<12)+(0<<9)+(1<<6)+1;
-	mips.mem[4].inst = (2<<12)+1;
+	if(argc>1){
+		strcpy(fileN, argv[1]);
+		if(ler_mem(&mips,fileN)==2) printf("unable to open file");
+	}
 
 	char opt='1';
 
     while (opt != '0'){
 
-	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\n9)show multicycle only units\nb)back\n0)quit\n:");
+	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\n9)show multicycle only units\nx)print memory in hex\nb)back\n0)quit\n:");
 
 	do scanf("%c",&opt); while (opt == '\n');
 
@@ -105,6 +104,12 @@ int main(int argc, char** argv){
 	case 'b':
 		if(popState(&mips,&state_stack)) printf("no state to return to\n");
 		else print_state(&mips);
+	break;
+	case 'x':
+		print_mem_hex(&mips);
+	break;
+	case 'i':
+		print_instructions(&mips);
 	break;
 	return 0;
 }

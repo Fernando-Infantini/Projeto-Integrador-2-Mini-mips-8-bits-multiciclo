@@ -135,6 +135,43 @@ int gen_asm(mips_instance* mips, const char* name){
 	return 0;
 }
 
+void print_instructions(mips_instance* mips){
+
+	for(int i=0; i<256;i++){
+		unsigned int mi = 1;
+		unsigned int inst = mips->mem[i].inst;
+		update_microinstruction(inst>>12,&mi);
+		char tmp[5];
+		instruction_name_finder(inst>>12,inst&7,tmp);
+
+		printf("%u:", i);
+		switch(mi){
+			case 7:
+				printf("%s $%u, $%u, $%u\n", tmp, (inst>>3)&7, (inst>>9)&7, (inst>>6)&7);
+			break;
+			case 9:
+				goto immediat;
+			break;
+			case 10:
+				printf("%s %u\n", tmp, inst&255);
+			break;
+			default:
+				update_microinstruction(inst>>12,&mi);
+				switch(mi){
+					case 6:
+					immediat:
+						printf("%s $%u, $%u, %u\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
+					break;
+					default:
+						printf("%s $%u, $%u(%u)\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
+					break;
+				}
+			break;
+		}
+	}
+	return;
+}
+
 void decimal_para_binario(char binario[], int num, int bits, int usar_complemento){
     int i = bits - 1;
 
