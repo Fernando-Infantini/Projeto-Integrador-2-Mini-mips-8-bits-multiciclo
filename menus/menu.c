@@ -61,10 +61,6 @@ int main(int argc, char** argv){
 		print_registers(&mips);
 	break;
 
-	case '4':
-	printf("Work in progress...\n");
-	break;
-
 	case '5':
 		{
 			printf("File name: ");
@@ -108,7 +104,7 @@ int main(int argc, char** argv){
 	case 'x':
 		print_mem_hex(&mips);
 	break;
-	case 'i':
+	case '4':
 		print_instructions(&mips);
 	break;
 	return 0;
