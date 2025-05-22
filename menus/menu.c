@@ -34,7 +34,7 @@ int main(int argc, char** argv){
 
     while (opt != '0'){
 
-	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\n9)show multicycle only units\nb)back\n0)quit\n:");
+	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\n9)show multicycle only units\nx)print memory in hex\nb)back\n0)quit\n:");
 
 	do scanf("%c",&opt); while (opt == '\n');
 
@@ -105,6 +105,9 @@ int main(int argc, char** argv){
 	case 'b':
 		if(popState(&mips,&state_stack)) printf("no state to return to\n");
 		else print_state(&mips);
+	break;
+	case 'x':
+		print_mem_hex(&mips);
 	break;
 	return 0;
 }
