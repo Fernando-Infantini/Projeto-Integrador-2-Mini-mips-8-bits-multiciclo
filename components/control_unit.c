@@ -24,7 +24,7 @@ control_signal* uc(unsigned int microinstruction, unsigned int function){
 	}else if( (6<microinstruction && microinstruction<9) || (microinstruction==10)){
 		result->AluFunct = function;
 	}else{
-		result->AluFunct = 1;
+		result->AluFunct = 2;
 	}
 
 	tmp = (microinstruction==10);

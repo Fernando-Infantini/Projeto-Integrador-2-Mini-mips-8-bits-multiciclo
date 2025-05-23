@@ -7,12 +7,12 @@ void instruction_name_finder(unsigned int inst, unsigned int function, char* nam
 		case 0:
 			switch(function){
 				case 0:
-				case 2:
+				case 1:
 				case 4:
 				case 6:
 					strcpy(name,"add\0");
 				break;
-				case 1:
+				case 2:
 					strcpy(name,"sub\0");
 				break;
 				case 3:

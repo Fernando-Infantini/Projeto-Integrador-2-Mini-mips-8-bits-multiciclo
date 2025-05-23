@@ -8,14 +8,14 @@ ula_signal* ula(int16_t reg1, int16_t reg2, uint8_t funct){
 
     switch(funct){
         case 0:
-        case 2:
+        case 1:
         case 3:
         case 6:
             if(reg1+reg2>127 || reg1+reg2<-128) result->overflow = 1;
             result->result = (int8_t) reg1 + reg2;
         break;
 
-        case 1:
+        case 2:
             if(reg1-reg2>127 || reg1-reg2<-128) result->overflow = 1;
             result->result = (int8_t) reg1 - reg2;
         break;
