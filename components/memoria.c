@@ -30,6 +30,7 @@ int ler_mem(mips_instance* state, const char* name){
 
         if (flag == 0) {
             state->mem[i].inst = binario_para_decimal(temp, 0, 15, 0);  // Lê instrução binária
+		continue;
             i++;
         }
     }
