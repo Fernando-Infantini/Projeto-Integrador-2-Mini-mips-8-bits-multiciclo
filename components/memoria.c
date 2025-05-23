@@ -125,7 +125,7 @@ int gen_asm(mips_instance* mips, const char* name){
 						fprintf(arq,"%s $%u, $%u, %u\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
 					break;
 					default:
-						fprintf(arq,"%s $%u, $%u(%u)\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
+						fprintf(arq,"%s $%u, %u($%u)\n", tmp, (inst>>6)&7, inst&63, (inst>>9)&7);
 					break;
 				}
 			break;
@@ -163,7 +163,7 @@ void print_instructions(mips_instance* mips){
 						printf("%s $%u, $%u, %u\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
 					break;
 					default:
-						printf("%s $%u, $%u(%u)\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
+						printf("%s $%u, %u($%u)\n", tmp, (inst>>6)&7, inst&63, (inst>>9)&7);
 					break;
 				}
 			break;
