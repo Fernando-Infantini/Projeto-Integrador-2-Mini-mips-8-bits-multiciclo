@@ -47,10 +47,9 @@ int main(int argc, char** argv){
 		pushState(&mips, &state_stack);
 		exec(&mips);
 		print_state(&mips);
-		char I[5], M[7];
-		instruction_name_finder((mips.RI>>12),(mips.RI&7),I);
-		microinstruction_name_finder(mips.microinstruction,M);
-		printf("pc:%i|%s %s\n",mips.pc,I,M);
+		printf("%hu ", mips.pc);
+		print_instruction(mips.RI);
+		printf("\nstate: %u\n", mips.microinstruction);
 	break;
 
 	case '2':

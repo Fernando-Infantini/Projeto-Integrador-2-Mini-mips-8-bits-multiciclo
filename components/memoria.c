@@ -261,3 +261,35 @@ int write_a_ddress(mips_instance* mips, unsigned int address, int value, _Bool m
 	}
 	return 0;
 }
+
+void print_instruction(unsigned int inst){
+		unsigned int mi = 1;
+		update_microinstruction(inst>>12,&mi);
+		char tmp[5];
+		instruction_name_finder(inst>>12,inst&7,tmp);
+
+		switch(mi){
+			case 7:
+				printf("%s $%u, $%u, $%u", tmp, (inst>>3)&7, (inst>>9)&7, (inst>>6)&7);
+			break;
+			case 9:
+				goto immediat;
+			break;
+			case 10:
+				printf("%s %u", tmp, inst&255);
+			break;
+			default:
+				update_microinstruction(inst>>12,&mi);
+				switch(mi){
+					case 6:
+					immediat:
+						printf("%s $%u, $%u, %u", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
+					break;
+					default:
+						printf("%s $%u, %u($%u)", tmp, (inst>>6)&7, inst&63, (inst>>9)&7);
+					break;
+				}
+			break;
+		}
+	return;
+}

@@ -85,3 +85,8 @@ void microinstruction_name_finder(unsigned int microinstruction, char* name){
 	}
 	return;
 }
+
+unsigned int name_to_instruction(const char* name){
+	if(!strcmp(name,"add\0"));
+	return -1;
+}
