@@ -76,7 +76,7 @@ int main(int argc, char** argv){
 	break;
 
 	case '7':
-		printf("Informe Break point: ");
+		printf("Break point: ");
 		scanf("%i",&break_point);
 
 		do exec(&mips); while(mips.pc!=break_point);
@@ -113,7 +113,7 @@ int main(int argc, char** argv){
 }
 
 void print_memory(mips_instance* mips){
-	printf("\n==========Memória de instrucoes/dados==========\n    ");
+	printf("\n================instruction/data===============\n    ");
 	for(int j=0;j<8;j++){
 		printf("      %i   ", j);
 	}
@@ -134,7 +134,7 @@ void print_memory(mips_instance* mips){
 	return;
 }
 void print_registers(mips_instance* mips){
-	printf("\n==========Registradores==========\n");
+	printf("\n============Registers============\n");
 	for(int i=0;i<8;i++){
 		printf("|$%i: %i",i,mips->reg[i]);
 	}
@@ -159,7 +159,7 @@ void const_size(char* out, int in){
 	return;
 }
 void print_mem_hex(mips_instance* mips){
-	printf("\n==========Memória de instrucoes/dados==========\n    ");
+	printf("\n================instruction/data===============\n    ");
 	for(int j=0;j<8;j++){
 		printf("   %i ", j);
 	}

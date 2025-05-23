@@ -56,7 +56,7 @@ int binario_para_decimal(char binario[], int inicio, int fim, int complemento2) 
     int tamanho = strlen(binario);
 
     if (inicio < 0 || fim >= tamanho || inicio > fim) {
-        printf("Índices inválidos.\n");
+        //printf("Índices inválidos.\n");
         return -1;
     }
 
@@ -191,10 +191,10 @@ void decimal_para_binario(char binario[], int num, int bits, int usar_complement
 
 }
 
-void save_mem(mips_instance state){
+int save_mem(mips_instance state){
 	char temp[256];
 	while(getchar() != '\n');
-	printf("Digite nome do arquivo: ");
+	printf("File name: ");
 	setbuf(stdin,NULL);
 	fgets(temp,255,stdin);
 
