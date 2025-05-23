@@ -80,6 +80,10 @@ int main(int argc, char** argv){
 
 		do exec(&mips); while(mips.pc!=break_point);
 		print_state(&mips);
+		printf("%hu ", mips.pc);
+		print_instruction(mips.RI);
+		printf("\nstate: %u\n", mips.microinstruction);
+
 	break;
 
 	case '8':
@@ -97,7 +101,12 @@ int main(int argc, char** argv){
 
 	case 'b':
 		if(popState(&mips,&state_stack)) printf("no state to return to\n");
-		else print_state(&mips);
+		else{
+			print_state(&mips);
+			printf("%hu ", mips.pc);
+			print_instruction(mips.RI);
+			printf("\nstate: %u\n", mips.microinstruction);
+		}
 	break;
 	case 'x':
 		print_mem_hex(&mips);
