@@ -87,6 +87,14 @@ void microinstruction_name_finder(unsigned int microinstruction, char* name){
 }
 
 unsigned int name_to_instruction(const char* name){
-	if(!strcmp(name,"add\0"));
-	return -1;
+	if(!strcmp(name,"add\0")) return 0;
+	else if(!strcmp(name,"sub\0")) return 1<<4;
+	else if(!strcmp(name,"and\0"))	return 3<<4;
+	else if(!strcmp(name,"or\0")) return 5<<4;
+	else if(!strcmp(name,"addi\0")) return 4;
+	else if(!strcmp(name,"beq\0")) return 8;
+	else if(!strcmp(name,"sw\0")) return 15;
+	else if(!strcmp(name,"lw\0")) return 11;
+	else if(!strcmp(name,"j\0")) return 2;
+	else return 255;
 }
