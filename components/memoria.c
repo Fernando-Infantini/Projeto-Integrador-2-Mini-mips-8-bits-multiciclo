@@ -39,7 +39,7 @@ int ler_mem(mips_instance* state, const char* name){
     while (i < 256 && fgets(temp, 19, arq) != NULL) {  // Enquanto não atingir o fim do arquivo
         temp[strcspn(temp, "\n")] = '\0';  // Remover \n se presente
         // Leitura dos dados após ".data"
-        state->mem[i].data[0] = binario_para_decimal(temp, 0, 7, 1); // Leitura de 16 bits
+        state->mem[i].data[0] = binario_para_decimal(temp, 0, 15, 1); // Leitura de 16 bits
         i++;
     }
 
