@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdint.h>
 
 #include "memoria.h"
 #include "mips_instance.h"
@@ -144,6 +145,9 @@ void print_instructions(mips_instance* mips){
 		char tmp[5];
 		instruction_name_finder(inst>>12,inst&7,tmp);
 
+		int imm = inst&63;
+		if(imm>31) imm -= 64;
+
 		printf("%u:", i);
 		switch(mi){
 			case 7:
@@ -160,10 +164,10 @@ void print_instructions(mips_instance* mips){
 				switch(mi){
 					case 6:
 					immediat:
-						printf("%s $%u, $%u, %u\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
+						printf("%s $%u, $%u, %u\n", tmp, (inst>>6)&7, (inst>>9)&7, imm);
 					break;
 					default:
-						printf("%s $%u, %u($%u)\n", tmp, (inst>>6)&7, inst&63, (inst>>9)&7);
+						printf("%s $%u, %u($%u)\n", tmp, (inst>>6)&7, imm, (inst>>9)&7);
 					break;
 				}
 			break;
@@ -268,6 +272,9 @@ void print_instruction(unsigned int inst){
 		char tmp[5];
 		instruction_name_finder(inst>>12,inst&7,tmp);
 
+		int imm = inst&63;
+		if(imm>31) imm -= 64;
+
 		switch(mi){
 			case 7:
 				printf("%s $%u, $%u, $%u", tmp, (inst>>3)&7, (inst>>9)&7, (inst>>6)&7);
@@ -283,10 +290,10 @@ void print_instruction(unsigned int inst){
 				switch(mi){
 					case 6:
 					immediat:
-						printf("%s $%u, $%u, %u", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
+						printf("%s $%u, $%u, %i", tmp, (inst>>6)&7, (inst>>9)&7, imm);
 					break;
 					default:
-						printf("%s $%u, %u($%u)", tmp, (inst>>6)&7, inst&63, (inst>>9)&7);
+						printf("%s $%u, %i($%u)", tmp, (inst>>6)&7, imm, (inst>>9)&7);
 					break;
 				}
 			break;

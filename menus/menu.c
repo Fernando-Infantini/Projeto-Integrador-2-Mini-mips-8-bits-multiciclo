@@ -92,6 +92,18 @@ int main(int argc, char** argv){
 			do fgets(fileN,64,stdin); while(strcmp(fileN,"\n\0")==0);
 			fileN[strcspn(fileN,"\n\0")]='\0';
 			if(ler_mem(&mips,fileN)==2) printf("Unable to open file");
+			else{
+				mips.pc=0;
+				mips.RI=0;
+				mips.RDM=0;
+				mips.A=0;
+				mips.B=0;
+				mips.aluOut=0;
+				mips.microinstruction=0;
+				for(int i=0;i<8;i++){
+					mips.reg[i]=0;
+				}
+			}
 		}
 	break;
 
