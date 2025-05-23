@@ -9,7 +9,7 @@ void exec(mips_instance* mips){
 	int8_t aIn, bIn, signExt, pcSrc, rt;
 	uint8_t where;
 
-	control_signal* csignal = uc(mips->microinstruction,mips->RI);
+	control_signal* csignal = uc(mips->microinstruction,(mips->RI)&7);
 
 	if(csignal->RegDst==0){
 		rt = (mips->RI>>6)&7;

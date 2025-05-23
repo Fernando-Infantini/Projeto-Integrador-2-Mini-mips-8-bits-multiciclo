@@ -26,7 +26,6 @@ int ler_mem(mips_instance* state, const char* name){
         temp[strcspn(temp, "\n")] = '\0';  // Remover \n se presente
         if (strcmp(temp, ".data") == 0) {
             flag = 1;  // Encontramos ".data", agora vamos ler os dados
-            continue;  // Ignora a linha ".data"
         }
 
         if (flag == 0) {
@@ -40,7 +39,7 @@ int ler_mem(mips_instance* state, const char* name){
     while (i < 256 && fgets(temp, 19, arq) != NULL) {  // Enquanto não atingir o fim do arquivo
         temp[strcspn(temp, "\n")] = '\0';  // Remover \n se presente
         // Leitura dos dados após ".data"
-        state->mem[i].data[0] = binario_para_decimal(temp, 0, 15, 1); // Leitura de 16 bits
+        state->mem[i].data[0] = binario_para_decimal(temp, 8, 15, 1); // Leitura de 16 bits
         i++;
     }
 
@@ -123,10 +122,10 @@ int gen_asm(mips_instance* mips, const char* name){
 				switch(mi){
 					case 6:
 					immediat:
-						fprintf(arq,"%s $%u, $%u, %u\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
+						fprintf(arq,"%s $%u, $%u, %i\n", tmp, (inst>>6)&7, (inst>>9)&7, inst&63);
 					break;
 					default:
-						fprintf(arq,"%s $%u, %u($%u)\n", tmp, (inst>>6)&7, inst&63, (inst>>9)&7);
+						fprintf(arq,"%s $%u, %i($%u)\n", tmp, (inst>>6)&7, inst&63, (inst>>9)&7);
 					break;
 				}
 			break;
@@ -164,10 +163,10 @@ void print_instructions(mips_instance* mips){
 				switch(mi){
 					case 6:
 					immediat:
-						printf("%s $%u, $%u, %u\n", tmp, (inst>>6)&7, (inst>>9)&7, imm);
+						printf("%s $%u, $%u, %i\n", tmp, (inst>>6)&7, (inst>>9)&7, imm);
 					break;
 					default:
-						printf("%s $%u, %u($%u)\n", tmp, (inst>>6)&7, imm, (inst>>9)&7);
+						printf("%s $%u, %i($%u)\n", tmp, (inst>>6)&7, imm, (inst>>9)&7);
 					break;
 				}
 			break;
