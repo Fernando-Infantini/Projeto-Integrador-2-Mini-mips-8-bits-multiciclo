@@ -246,3 +246,18 @@ int write_a_register(mips_instance* mips, char* which, int value){
 	}
 	return 0;
 }
+
+int write_a_ddress(mips_instance* mips, unsigned int address, int value, _Bool mode){
+
+	if( !((0<=address) && (address<256)) ) return 2;
+
+	if( (mode == 0) ){
+			if(value<-128 || value>127) return 1;
+			mips->mem[address].data[0]=value;
+			mips->mem[address].data[1]=0;
+	}
+	else{
+			mips->mem[address].inst = value;
+	}
+	return 0;
+}

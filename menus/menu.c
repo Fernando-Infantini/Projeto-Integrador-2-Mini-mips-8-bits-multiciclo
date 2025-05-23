@@ -33,7 +33,7 @@ int main(int argc, char** argv){
 
     while (opt != '0'){
 
-	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\n9)show multicycle only units\nx)print memory in hex\nb)back\ne)edit a register\n0)quit\n:");
+	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\n9)show multicycle only units\nx)print memory in hex\nb)back\ne)edit a register\nE)edit a memory address\n0)quit\n:");
 
 	do scanf("%c",&opt); while (opt == '\n');
 
@@ -122,6 +122,24 @@ int main(int argc, char** argv){
 				break;
 				case 2:
 					printf("no register %s\n", tmpp);
+				break;
+			}
+	}break;
+	case 'E':{
+			int value;
+			unsigned int address;
+			printf("Address: ");
+			scanf("%i", &address);
+
+			printf("Value: ");
+			scanf("%i", &value);
+
+			switch(write_a_ddress(&mips,address,value,0)){
+				case 1:
+					printf("invalid value\n");
+				break;
+				case 2:
+					printf("inexistent address\n");
 				break;
 			}
 	}break;

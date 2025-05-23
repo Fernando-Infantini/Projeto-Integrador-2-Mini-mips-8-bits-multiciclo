@@ -9,4 +9,5 @@ void decimal_para_binario(char binario[], int num, int bits, int usar_complement
 void save_mem(mips_instance state);
 void print_instructions(mips_instance* mips);
 int write_a_register(mips_instance* mips, char* which, int value);
+int write_a_ddress(mips_instance* mips, unsigned int address, int value, _Bool mode);
 #endif
