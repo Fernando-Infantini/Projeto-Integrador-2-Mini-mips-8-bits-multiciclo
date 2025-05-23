@@ -219,3 +219,30 @@ void save_mem(mips_instance state){
 
 	fclose(arq);
 }
+
+int write_a_register(mips_instance* mips, char* which, int value){
+	if(!strcmp(which,"PC\0")){
+		if(value<0 || value>255) return 1;
+		mips->pc = value;
+	}
+	else{
+		if(value<-128 || value>127) return 1;
+		if(!strcmp(which,"A\0")){
+			mips->A = value;
+		}
+		else if(!strcmp(which,"B\0")){
+			mips->B = value;
+		}
+		else if(!strcmp(which,"RDM\0")){
+			mips->RDM = value;
+		}
+		else if(!strcmp(which,"AluOut\0")){
+			mips->aluOut = value;
+		}
+		else if( (0<=which[0]-'0') && (which[0]-'0'<9) ){
+			mips->reg[which[0]-'0'] = value;
+		}
+		else return 2;
+	}
+	return 0;
+}

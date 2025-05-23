@@ -33,7 +33,7 @@ int main(int argc, char** argv){
 
     while (opt != '0'){
 
-	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\n9)show multicycle only units\nx)print memory in hex\nb)back\n0)quit\n:");
+	printf("\n1)step\n2)show data memory\n3)show registers\n4)show all instructions\n5)make .asm\n6)store data\n7)run\n8)load instruction memory\n9)show multicycle only units\nx)print memory in hex\nb)back\ne)edit a register\n0)quit\n:");
 
 	do scanf("%c",&opt); while (opt == '\n');
 
@@ -63,11 +63,11 @@ int main(int argc, char** argv){
 
 	case '5':
 		{
+			char tmpp[64];
 			printf("File name: ");
-			do fgets(fileN,64,stdin); while(strcmp(fileN,"\n\0")==0);
-			char* match = strpbrk(fileN,"\n\0");
-			if(match!=NULL) (*match) = '\0';
-			if(gen_asm(&mips,fileN)==2) printf("Unable to create file");
+			do fgets(tmpp,64,stdin); while(strcmp(tmpp,"\n\0")==0);
+			fileN[strcspn(tmpp,"\n\0")]='\0';
+			if(gen_asm(&mips,tmpp)==2) printf("Unable to create file");
 		}
 	break;
 
@@ -87,8 +87,7 @@ int main(int argc, char** argv){
 		{
 			printf("File name: ");
 			do fgets(fileN,64,stdin); while(strcmp(fileN,"\n\0")==0);
-			char* match = strpbrk(fileN,"\n\0");
-			if(match!=NULL) (*match) = '\0';
+			fileN[strcspn(fileN,"\n\0")]='\0';
 			if(ler_mem(&mips,fileN)==2) printf("Unable to open file");
 		}
 	break;
@@ -107,6 +106,25 @@ int main(int argc, char** argv){
 	case '4':
 		print_instructions(&mips);
 	break;
+	case 'e':{
+			int value;
+			char tmpp[10];
+			printf("Register: ");
+			do fgets(tmpp,10,stdin); while(strcmp(tmpp,"\n\0")==0);
+			tmpp[strcspn(tmpp,"\n\0")]='\0';
+
+			printf("Value: ");
+			scanf("%i", &value);
+
+			switch(write_a_register(&mips,tmpp,value)){
+				case 1:
+					printf("invalid value\n");
+				break;
+				case 2:
+					printf("no register %s\n", tmpp);
+				break;
+			}
+	}break;
 	return 0;
 }
 }
