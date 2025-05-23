@@ -11,4 +11,5 @@ void print_instructions(mips_instance* mips);
 int write_a_register(mips_instance* mips, char* which, int value);
 int write_a_ddress(mips_instance* mips, unsigned int address, int value, _Bool mode);
 void print_instruction(unsigned int inst);
+unsigned int write_inst_mem(mips_instance* mips, unsigned int address, const char* inst);
 #endif

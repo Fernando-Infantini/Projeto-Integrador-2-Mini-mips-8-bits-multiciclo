@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include <stdint.h>
 
 #include "memoria.h"
 #include "mips_instance.h"
@@ -298,5 +297,33 @@ void print_instruction(unsigned int inst){
 				}
 			break;
 		}
+	return;
+}
+
+unsigned int write_inst_mem(mips_instance* mips, unsigned int address, const char* inst){
+	char name[5];
+	unsigned int numI = name_to_instruction(name);
+	sscanf(inst,"%s",name);
+	inst += (strlen(name)+1)
+
+	switch(numI&15){
+		case 0:
+		break;
+		case 2:
+			unsigned int field;
+			sscanf(inst,"%i",field);
+			if(field>255) return 0;
+			else return 2<<12|field;
+		break;
+		case 4:
+		case 8:
+		break;
+		case 11:
+		case 15:
+		break;
+		case 255:
+			return 0;
+		break;
+	}
 	return;
 }
