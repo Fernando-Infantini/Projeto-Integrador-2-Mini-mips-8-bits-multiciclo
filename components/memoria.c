@@ -191,7 +191,7 @@ void decimal_para_binario(char binario[], int num, int bits, int usar_complement
 
 }
 
-int save_mem(mips_instance state){
+void save_mem(mips_instance state){
 	char temp[256];
 	while(getchar() != '\n');
 	printf("File name: ");
